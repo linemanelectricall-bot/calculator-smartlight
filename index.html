@@ -1,350 +1,556 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Lighting Planner Premium</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Smart Lighting Planner</title>
 <style>
-body{margin:0;padding:0;font-family:'Segoe UI', Tahoma, Geneva, Verdana,sans-serif;background:#f5f7fa;color:#333;}
-header{background:linear-gradient(90deg,#0077cc,#00aaff);color:#fff;padding:40px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
-header h1{font-size:2.8em;margin:0;font-weight:700;text-shadow:0 3px 6px rgba(0,0,0,0.3);}
-header p{margin-top:8px;font-size:1.2em;opacity:0.9;}
-.wrap{max-width:1100px;margin:30px auto;padding:0 20px;}
-.card{background:#fff;padding:25px;margin-bottom:25px;border-radius:15px;box-shadow:0 6px 20px rgba(0,0,0,0.1);transition:0.3s;}
-.card:hover{box-shadow:0 8px 25px rgba(0,0,0,0.15);}
-button.btn{padding:12px 25px;margin:5px;border:none;border-radius:10px;cursor:pointer;font-weight:600;transition:0.3s;}
-button.btn:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,0.2);}
-button.mode-btn{background:#0077cc;color:#fff;}
-button.mode-btn.active{background:#00aaff;box-shadow:0 0 20px #00aaff;}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:px20;align-items:end;}
-/* BESARKAN DROPDOWN / SELECT UNTUK VISUAL PREMIUM */
-.input-row input,
-.input-row select,
-#kategori,
-#ruangan,
-#lampSelect {
-  flex:1;
-  padding:13px 11px;      /* padding lebih tebal */
-  font-size:1.2em;        /* ukuran teks lebih besar */
-  border-radius:10px;     /* sudut lebih bulat */
-  border:1px solid #ccc;
-  cursor:pointer;         /* pointer untuk klik */
-  transition:0.3s;
-  width:100%;
-}
-
-.input-row input:focus,
-.input-row select:focus,
-#kategori:focus,
-#ruangan:focus,
-#lampSelect:focus {
-  border-color:#0077cc;
-  box-shadow:0 0 10px #00aaff inset;
-}
-.input-row input:focus,.input-row select:focus{border-color:#0077cc;box-shadow:0 0 15px #00aaff inset;}
-label{display:block;margin-bottom:10px;font-weight:600;}
-
-.result-block{margin-top:20px;padding:20px;border:1px dashed #0077cc;border-radius:10px;background:#f9f9f9;white-space:pre-wrap;font-family:monospace;}
-canvas{border:1px solid #0077cc;border-radius:12px;margin-top:15px;}
-.hidden{display:none;}
-footer{text-align:center;padding:20px;background:#e0e0e0;margin-top:40px;font-weight:600;border-top:1px solid #ccc;}
-.warning{color:red;font-weight:700;margin-top:10px;}
-table{width:100%;border-collapse:collapse;margin-top:15px;}
-table,th,td{border:1px solid #0077cc;}
-th,td{padding:8px;text-align:center;}
-th{background:#00aaff;color:#fff;}
-button.addLamp{padding:6px 12px;margin-top:5px;background:#0077cc;color:#fff;border:none;border-radius:6px;cursor:pointer;}
+  :root{
+    --blue-1:#0077cc; --blue-2:#00aaff; --bg:#f5f7fa; --card:#fff;
+    --muted:#6b7280; --accent-text:#07233a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial; background:var(--bg); color:var(--accent-text); -webkit-font-smoothing:antialiased;}
+  header{background:linear-gradient(90deg,var(--blue-1),var(--blue-2)); color:#fff;padding:28px 18px;text-align:center;box-shadow:0 6px 28px rgba(0,0,0,0.12);}
+  header h1{margin:0;font-size:1.5rem;letter-spacing:-0.2px;font-weight:700}
+  header p{margin:6px 0 0;font-size:0.95rem;opacity:0.95}
+  .wrap{max-width:1100px;margin:20px auto;padding:18px;}
+  .tabs{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .tab-btn{border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700;color:#fff;background:linear-gradient(90deg,var(--blue-1),var(--blue-2));box-shadow:0 6px 18px rgba(0,122,204,0.14)}
+  .tab-btn.inactive{background:#eee;color:var(--accent-text);box-shadow:none;font-weight:600}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 10px 30px rgba(16,24,40,0.06);margin-bottom:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  label{display:block;margin-bottom:6px;font-weight:700;font-size:0.92rem}
+  input[type="number"], input[type="text"], select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #d0d7df;font-size:0.98rem}
+  button.btn{border:0;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+  button.primary{background:linear-gradient(90deg,var(--blue-1),var(--blue-2));color:#fff}
+  button.ghost{background:transparent;border:1px solid #e6eef8;color:var(--accent-text)}
+  .muted{color:var(--muted);font-size:0.9rem}
+  /* Mode containers */
+  #mode1, #mode2{display:none}
+  .visible{display:block}
+  /* canvas/svg area */
+  .visual-wrap{display:flex;gap:12px;flex-wrap:wrap}
+  .visual{flex:1;min-width:260px;border-radius:10px;padding:12px;background:linear-gradient(180deg,#ffffff,#fbfdff);border:1px solid #e6f0fb}
+  #roomSvg{width:100%;height:320px;border-radius:8px;background:#fff;display:block}
+  .result-block{margin-top:12px;padding:12px;border-radius:10px;border:1px dashed var(--blue-1);background:#fbfdff;font-family:monospace;white-space:pre-wrap}
+  .warning{color:#b45309;font-weight:700;margin-top:10px}
+  /* Mode 2 specifics */
+  #kkkList{margin-top:10px;display:grid;gap:8px}
+  .kkk-row{display:grid;grid-template-columns:1fr 120px 150px 40px;gap:8px;align-items:center;padding:8px;border-radius:8px;background:#fafcff;border:1px solid #eef7ff}
+  .kkk-row .small{font-size:0.9rem;color:var(--muted)}
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th, td{padding:8px 10px;border-bottom:1px solid #eef2f7;text-align:left;font-size:0.95rem}
+  th{background:#f8fbff;font-weight:700}
+  tfoot td{font-weight:800}
+  .summary{margin-top:12px;padding:12px;border-radius:8px;background:#f7fbff;border:1px solid #e6f4ff;font-family:monospace;white-space:pre-wrap}
+  .small-muted{font-size:0.85rem;color:var(--muted)}
+  /* responsive */
+  @media (max-width:880px){
+    .grid-2{grid-template-columns:1fr}
+    .kkk-row{grid-template-columns:1fr 90px 120px 36px}
+    header h1{font-size:1.25rem}
+    #roomSvg{height:260px}
+  }
+  @media (max-width:480px){
+    header{padding:20px}
+    .wrap{padding:12px}
+    .tabs{gap:6px}
+    .tab-btn{padding:8px 10px;font-size:0.9rem}
+    .kkk-row{grid-template-columns:1fr 1fr;gap:6px}
+    .kkk-row .actions{grid-column:2/3;justify-self:end}
+  }
 </style>
 </head>
 <body>
 <header>
-<h1>Smart Lighting Planner Premium</h1>
-<p>Hitung lampu, layout, Watt & VA sesuai SNI secara profesional</p>
+  <h1>Smart Lighting Planner — Premium</h1>
+  <p>Perencanaan lampu & rekapitulasi daya (Mode 1: Layout • Mode 2: KKK & MCB)</p>
 </header>
+
 <div class="wrap">
-<div class="card" style="text-align:center;">
-<button class="btn mode-btn active" id="btnMode1">Mode 1 — Per Titik</button>
-<button class="btn mode-btn" id="btnMode2">Mode 2 — Multi Grup / KKK</button>
-</div>
+  <div class="tabs card">
+    <button id="tabMode1" class="tab-btn">Mode 1 — Lampu</button>
+    <button id="tabMode2" class="tab-btn inactive">Mode 2 — KKK & MCB</button>
+  </div>
 
-<!-- Mode 1 -->
-<div id="mode1" class="card">
-<div class="grid-2">
-<div>
-<label for="kategori">Kategori Ruangan</label>
-<select id="kategori"><option value="" disabled selected>-- Pilih Kategori --</option></select>
-</div>
-<div>
-<label for="ruangan">Jenis Ruangan</label>
-<select id="ruangan"><option value="" disabled selected>-- Pilih Ruangan --</option></select>
-</div>
-</div>
-<div class="input-row">
-<div>
-<label for="length">Panjang (m)</label>
-<input type="number" id="length" placeholder="contoh: 5">
-</div>
-<div>
-<label for="width">Lebar (m)</label>
-<input type="number" id="width" placeholder="contoh: 4">
-</div>
-<div>
-<label for="eta">Efisiensi η (0-1)</label>
-<input type="number" id="eta" step="0.01" value="0.8">
-</div>
-</div>
-<div style="margin-top:20px;">
-<label for="lampSelect">Pilih Lampu</label>
-<select id="lampSelect"><option value="" disabled selected>-- Pilih Lampu --</option></select>
-</div>
-<button class="btn mode-btn primary" id="calcMode1">Hitung & Tampilkan Layout</button>
-<div id="warning" class="warning hidden"></div>
-<div id="resultMode1" class="result-block"></div>
-<canvas id="layoutCanvas" width="700" height="450"></canvas>
-</div>
+  <!-- MODE 1 -->
+  <div id="mode1" class="card visible">
+    <div class="grid-2">
+      <div>
+        <label>Kategori Ruangan</label>
+        <select id="kategori"><option value="">-- Pilih Kategori --</option></select>
+      </div>
+      <div>
+        <label>Jenis Ruangan</label>
+        <select id="ruangan"><option value="">-- Pilih Ruangan --</option></select>
+      </div>
+    </div>
 
-<!-- Mode 2 -->
-<div id="mode2" class="card hidden">
-<div class="grid-2">
-<div>
-<label for="kkkCount">Jumlah KKK</label>
-<input type="number" id="kkkCount" placeholder="contoh: 2">
+    <div style="margin-top:12px" class="grid-2">
+      <div>
+        <label>Panjang (m)</label>
+        <input id="length" type="number" min="0" step="0.1" placeholder="5">
+      </div>
+      <div>
+        <label>Lebar (m)</label>
+        <input id="width" type="number" min="0" step="0.1" placeholder="4">
+      </div>
+    </div>
+
+    <div style="margin-top:12px" class="grid-2">
+      <div>
+        <label>Pilih Lampu</label>
+        <select id="lampSelect"><option value="">-- Pilih Lampu --</option></select>
+      </div>
+      <div>
+        <label>Efisiensi η (0-1)</label>
+        <input id="eta" type="number" step="0.01" value="0.8">
+      </div>
+    </div>
+
+    <div style="margin-top:14px" class="row">
+      <button id="calcMode1" class="btn primary">Hitung & Tampilkan Layout</button>
+      <div class="small-muted">Hasil visualisasi otomatis menyesuaikan ukuran layar</div>
+    </div>
+
+    <div class="visual-wrap" style="margin-top:14px">
+      <div class="visual" style="flex: 0.62;">
+        <svg id="roomSvg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="1000" height="600" fill="#fff"/>
+          <!-- points will be drawn here -->
+        </svg>
+      </div>
+      <div style="flex:0.38;min-width:220px;">
+        <div class="result-block" id="resultMode1">Hasil akan tampil di sini setelah klik "Hitung".</div>
+        <div id="distResult" class="small-muted" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODE 2 -->
+  <div id="mode2" class="card hidden">
+    <div class="grid-2">
+      <div>
+        <label>Jumlah Grup (1–6)</label>
+        <select id="groupCount">
+          <option value="1">1</option><option value="2" selected>2</option><option value="3">3</option>
+          <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+        </select>
+      </div>
+      <div>
+        <label>Gunakan MCB Utama?</label>
+        <select id="useMainMCB"><option value="no" selected>No</option><option value="yes">Yes</option></select>
+      </div>
+    </div>
+
+    <div style="margin-top:12px" class="controls">
+      <button id="addKKK" class="btn">➕ Tambah KKK</button>
+      <button id="clearKKK" class="btn ghost">Kosongkan Semua</button>
+      <div class="small-muted">Setiap baris KKK bisa diberi VA berbeda, lalu assign ke grup.</div>
+    </div>
+
+    <div id="kkkList"></div>
+
+    <div style="margin-top:12px" class="row">
+      <button id="calcMode2" class="btn primary">Hitung Mode 2</button>
+      <div class="small-muted">Hasil akan muncul dalam tabel dan rekapitulasi di bawahnya</div>
+    </div>
+
+    <div id="resultArea" style="margin-top:12px"></div>
+  </div>
+
+  <div style="text-align:center;margin-top:8px" class="small-muted">© <span id="year"></span> by @bah — Smart Lighting Planner</div>
 </div>
-<div>
-<label for="mcbType">Tipe Phase</label>
-<select id="mcbType"><option value="1phase">1 Phase</option><option value="3phase">3 Phase</option></select>
-</div>
-<div>
-<label for="effMode2">Efisiensi η (0-1)</label>
-<input type="number" id="effMode2" step="0.01" value="0.8">
-</div>
-</div>
-<div id="groupsContainer"></div>
-<button class="btn addLamp" id="addGroup">Tambah Grup Lampu</button>
-<button class="btn primary" id="calcMode2">Hitung Mode 2</button>
-<div id="resultMode2" class="result-block"></div>
-</div>
-</div>
-<footer>
-&copy; <span id="year"></span> by.@bah
-</footer>
 
 <script>
-// ===== Data ROOMS & LAMPS =====
-const ROOMS=[
-{key:"teras_rumah", name:"Teras (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:100},
-{key:"ruang_tamu", name:"Ruang Tamu (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:150},
-{key:"kamar_tidur", name:"Kamar Tidur (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:150},
-{key:"dapur", name:"Dapur (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:250},
-{key:"garasi", name:"Garasi (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:75},
-{key:"koridor_rumah", name:"Koridor (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:100},
-{key:"ruang_direktur", name:"Ruang Direktur (Perkantoran)", kategori:"Perkantoran", lux:350},
-{key:"ruang_rapat", name:"Ruang Rapat (Perkantoran)", kategori:"Perkantoran", lux:300},
-{key:"ruang_komputer", name:"Ruang Komputer (Perkantoran)", kategori:"Perkantoran", lux:500},
-{key:"ruang_arsip", name:"Ruang Arsip (Perkantoran)", kategori:"Perkantoran", lux:200},
-{key:"resepsionis", name:"Resepsionis (Perkantoran)", kategori:"Perkantoran", lux:300},
-{key:"open_office", name:"Ruang Kerja Terbuka (Perkantoran)", kategori:"Perkantoran", lux:350},
-{key:"kelas", name:"Ruang Kelas (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:300},
-{key:"lab_fisika", name:"Laboratorium Fisika (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:500},
-{key:"lab_komputer", name:"Laboratorium Komputer (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:500},
-{key:"perpustakaan", name:"Perpustakaan (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:300},
-{key:"ruang_gambar", name:"Ruang Gambar (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:750},
-{key:"aula", name:"Aula / Auditorium (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:200},
-{key:"lobi_hotel", name:"Lobi Hotel (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:200},
-{key:"kamar_hotel", name:"Kamar Hotel (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:150},
-{key:"ruang_makan", name:"Ruang Makan (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:200},
-{key:"dapur_restoran", name:"Dapur Restoran (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:500},
-{key:"bar", name:"Bar / Lounge (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:150},
-{key:"ruang_operasi", name:"Ruang Operasi (Rumah Sakit)", kategori:"Rumah Sakit", lux:1000},
-{key:"icu", name:"ICU (Rumah Sakit)", kategori:"Rumah Sakit", lux:300},
-{key:"rawat_inap", name:"Ruang Rawat Inap (Rumah Sakit)", kategori:"Rumah Sakit", lux:200},
-{key:"lab_klinik", name:"Laboratorium Klinik (Rumah Sakit)", kategori:"Rumah Sakit", lux:750},
-{key:"farmasi", name:"Farmasi / Apotek (Rumah Sakit)", kategori:"Rumah Sakit", lux:500},
-{key:"koridor_rumah_sakit", name:"Koridor (Rumah Sakit)", kategori:"Rumah Sakit", lux:150},
-{key:"produksi_kasar", name:"Produksi Kasar (Industri)", kategori:"Industri", lux:200},
-{key:"perakitan_presisi", name:"Perakitan Presisi (Industri)", kategori:"Industri", lux:1000},
-{key:"gudang", name:"Gudang (Industri)", kategori:"Industri", lux:150},
-{key:"ruang_kontrol", name:"Ruang Kontrol (Industri)", kategori:"Industri", lux:500},
-{key:"maintenance", name:"Workshop / Maintenance (Industri)", kategori:"Industri", lux:300},
-{key:"supermarket", name:"Supermarket (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:750},
-{key:"etalase", name:"Etalase / Display (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:1000},
-{key:"area_kasir", name:"Area Kasir (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:500},
-{key:"area_parkir", name:"Area Parkir Basement (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:75},
-{key:"foodcourt", name:"Foodcourt (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:300},
-{key:"jalan_utama", name:"Jalan Utama (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:20},
-{key:"jalan_lingkungan", name:"Jalan Lingkungan (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:10},
-{key:"terminal", name:"Terminal (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:150},
-{key:"stasiun", name:"Stasiun Kereta (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:200},
-{key:"bandara", name:"Bandara / Ruang Tunggu (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:300}
+/* ======= Data ======= */
+const ROOMS = [
+  {key:"teras_rumah", name:"Teras (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:100},
+  {key:"ruang_tamu", name:"Ruang Tamu (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:150},
+  {key:"kamar_tidur", name:"Kamar Tidur (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:150},
+  {key:"dapur", name:"Dapur (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:250},
+  {key:"garasi", name:"Garasi (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:75},
+  {key:"koridor_rumah", name:"Koridor (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:100},
+  {key:"ruang_direktur", name:"Ruang Direktur (Perkantoran)", kategori:"Perkantoran", lux:350},
+  {key:"ruang_rapat", name:"Ruang Rapat (Perkantoran)", kategori:"Perkantoran", lux:300},
+  {key:"ruang_komputer", name:"Ruang Komputer (Perkantoran)", kategori:"Perkantoran", lux:500},
+  {key:"ruang_arsip", name:"Ruang Arsip (Perkantoran)", kategori:"Perkantoran", lux:200},
+  {key:"resepsionis", name:"Resepsionis (Perkantoran)", kategori:"Perkantoran", lux:300},
+  {key:"open_office", name:"Ruang Kerja Terbuka (Perkantoran)", kategori:"Perkantoran", lux:350},
+  {key:"kelas", name:"Ruang Kelas (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:300},
+  {key:"lab_fisika", name:"Laboratorium Fisika (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:500},
+  {key:"lab_komputer", name:"Laboratorium Komputer (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:500},
+  {key:"perpustakaan", name:"Perpustakaan (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:300},
+  {key:"ruang_gambar", name:"Ruang Gambar (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:750},
+  {key:"aula", name:"Aula / Auditorium (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:200},
+  {key:"lobi_hotel", name:"Lobi Hotel (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:200},
+  {key:"kamar_hotel", name:"Kamar Hotel (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:150},
+  {key:"ruang_makan", name:"Ruang Makan (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:200},
+  {key:"dapur_restoran", name:"Dapur Restoran (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:500},
+  {key:"bar", name:"Bar / Lounge (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:150},
+  {key:"ruang_operasi", name:"Ruang Operasi (Rumah Sakit)", kategori:"Rumah Sakit", lux:1000},
+  {key:"icu", name:"ICU (Rumah Sakit)", kategori:"Rumah Sakit", lux:300},
+  {key:"rawat_inap", name:"Ruang Rawat Inap (Rumah Sakit)", kategori:"Rumah Sakit", lux:200},
+  {key:"lab_klinik", name:"Laboratorium Klinik (Rumah Sakit)", kategori:"Rumah Sakit", lux:750},
+  {key:"farmasi", name:"Farmasi / Apotek (Rumah Sakit)", kategori:"Rumah Sakit", lux:500},
+  {key:"koridor_rumah_sakit", name:"Koridor (Rumah Sakit)", kategori:"Rumah Sakit", lux:150},
+  {key:"produksi_kasar", name:"Produksi Kasar (Industri)", kategori:"Industri", lux:200},
+  {key:"perakitan_presisi", name:"Perakitan Presisi (Industri)", kategori:"Industri", lux:1000},
+  {key:"gudang", name:"Gudang (Industri)", kategori:"Industri", lux:150},
+  {key:"ruang_kontrol", name:"Ruang Kontrol (Industri)", kategori:"Industri", lux:500},
+  {key:"maintenance", name:"Workshop / Maintenance (Industri)", kategori:"Industri", lux:300},
+  {key:"supermarket", name:"Supermarket (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:750},
+  {key:"etalase", name:"Etalase / Display (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:1000},
+  {key:"area_kasir", name:"Area Kasir (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:500},
+  {key:"area_parkir", name:"Area Parkir Basement (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:75},
+  {key:"foodcourt", name:"Foodcourt (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:300},
+  {key:"jalan_utama", name:"Jalan Utama (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:20},
+  {key:"jalan_lingkungan", name:"Jalan Lingkungan (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:10},
+  {key:"terminal", name:"Terminal (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:150},
+  {key:"stasiun", name:"Stasiun Kereta (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:200},
+  {key:"bandara", name:"Bandara / Ruang Tunggu (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:300}
+];
+const LAMPS = [
+  {index:0,name:"LED Philips 5W",watt:5,lumen:450},
+  {index:1,name:"LED Philips 7W",watt:7,lumen:600},
+  {index:2,name:"LED Philips 9W",watt:9,lumen:800},
+  {index:3,name:"LED Philips 12W",watt:12,lumen:1055},
+  {index:4,name:"LED Philips 15W",watt:15,lumen:1300},
+  {index:5,name:"LED Philips 18W",watt:18,lumen:1500},
+  {index:6,name:"LED Panasonic 5W",watt:5,lumen:420},
+  {index:7,name:"LED Panasonic 9W",watt:9,lumen:850},
+  {index:8,name:"LED Panasonic 12W",watt:12,lumen:1100},
+  {index:9,name:"LED Panasonic 18W",watt:18,lumen:1600},
+  {index:10,name:"LED Osram 5W",watt:5,lumen:400},
+  {index:11,name:"LED Osram 10W",watt:10,lumen:900},
+  {index:12,name:"LED Osram 15W",watt:15,lumen:1400},
+  {index:13,name:"LED Osram 20W",watt:20,lumen:1800},
+  {index:14,name:"Lampu TL 18W",watt:18,lumen:1200},
+  {index:15,name:"Lampu TL 36W",watt:36,lumen:3350},
+  {index:16,name:"Lampu TL 40W",watt:40,lumen:3600},
+  {index:17,name:"Lampu TL 58W",watt:58,lumen:4000},
+  {index:18,name:"Lampu TL 80W",watt:80,lumen:5400},
+  {index:19,name:"Downlight LED 5W",watt:5,lumen:450},
+  {index:20,name:"Downlight LED 10W",watt:10,lumen:900},
+  {index:21,name:"Downlight LED 12W",watt:12,lumen:1000},
+  {index:22,name:"Downlight LED 18W",watt:18,lumen:1500},
+  {index:23,name:"Spotlight LED 5W",watt:5,lumen:400},
+  {index:24,name:"Spotlight LED 10W",watt:10,lumen:900},
+  {index:25,name:"Spotlight LED 15W",watt:15,lumen:1400},
+  {index:26,name:"Spotlight LED 20W",watt:20,lumen:1800},
+  {index:27,name:"Floodlight LED 20W",watt:20,lumen:1800},
+  {index:28,name:"Floodlight LED 30W",watt:30,lumen:2700},
+  {index:29,name:"Floodlight LED 50W",watt:50,lumen:4500},
+  {index:30,name:"Floodlight LED 70W",watt:70,lumen:6300},
+  {index:31,name:"Floodlight LED 100W",watt:100,lumen:9000}
 ];
 
-const LAMPS=[
-{index:0,name:"LED Philips 5W",watt:5,lumen:450},
-{index:1,name:"LED Philips 7W",watt:7,lumen:600},
-{index:2,name:"LED Philips 9W",watt:9,lumen:800},
-{index:3,name:"LED Philips 12W",watt:12,lumen:1055},
-{index:4,name:"LED Philips 15W",watt:15,lumen:1300},
-{index:5,name:"LED Philips 18W",watt:18,lumen:1500},
-{index:6,name:"LED Panasonic 5W",watt:5,lumen:420},
-{index:7,name:"LED Panasonic 9W",watt:9,lumen:850},
-{index:8,name:"LED Panasonic 12W",watt:12,lumen:1100},
-{index:9,name:"LED Panasonic 18W",watt:18,lumen:1600},
-{index:10,name:"LED Osram 5W",watt:5,lumen:400},
-{index:11,name:"LED Osram 10W",watt:10,lumen:900},
-{index:12,name:"LED Osram 15W",watt:15,lumen:1400},
-{index:13,name:"LED Osram 20W",watt:20,lumen:1800},
-{index:14,name:"Lampu TL 18W",watt:18,lumen:1200},
-{index:15,name:"Lampu TL 36W",watt:36,lumen:3350},
-{index:16,name:"Lampu TL 40W",watt:40,lumen:3600},
-{index:17,name:"Lampu TL 58W",watt:58,lumen:4000},
-{index:18,name:"Lampu TL 80W",watt:80,lumen:5400},
-{index:19,name:"Downlight LED 5W",watt:5,lumen:450},
-{index:20,name:"Downlight LED 10W",watt:10,lumen:900},
-{index:21,name:"Downlight LED 12W",watt:12,lumen:1000},
-{index:22,name:"Downlight LED 18W",watt:18,lumen:1500},
-{index:23,name:"Spotlight LED 5W",watt:5,lumen:400},
-{index:24,name:"Spotlight LED 10W",watt:10,lumen:900},
-{index:25,name:"Spotlight LED 15W",watt:15,lumen:1400},
-{index:26,name:"Spotlight LED 20W",watt:20,lumen:1800},
-{index:27,name:"Floodlight LED 20W",watt:20,lumen:1800},
-{index:28,name:"Floodlight LED 30W",watt:30,lumen:2700},
-{index:29,name:"Floodlight LED 50W",watt:50,lumen:4500},
-{index:30,name:"Floodlight LED 70W",watt:70,lumen:6300},
-{index:31,name:"Floodlight LED 100W",watt:100,lumen:9000}
-];
+/* ======= Populate selects ======= */
+const kategoriEl = document.getElementById('kategori');
+const ruanganEl = document.getElementById('ruangan');
+const lampSelect = document.getElementById('lampSelect');
+const kategoriList = [...new Set(ROOMS.map(r=>r.kategori))];
+kategoriList.forEach(k=>{
+  const opt = document.createElement('option'); opt.value=k; opt.textContent=k; kategoriEl.appendChild(opt);
+});
+kategoriEl.addEventListener('change', ()=>{
+  ruanganEl.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
+  ROOMS.filter(r=>r.kategori === kategoriEl.value).forEach(r=>{
+    const opt = document.createElement('option'); opt.value=r.key; opt.textContent=r.name; ruanganEl.appendChild(opt);
+  });
+});
+LAMPS.forEach(l=>{
+  const opt=document.createElement('option'); opt.value=l.index; opt.textContent=${l.name} — ${l.watt}W / ${l.lumen}lm; lampSelect.appendChild(opt);
+});
 
-// ===== Populate dropdowns =====
-const kategoriEl=document.getElementById("kategori");
-const ruanganEl=document.getElementById("ruangan");
-const lampSelect=document.getElementById("lampSelect");
-const kategoriList=[...new Set(ROOMS.map(r=>r.kategori))];
-kategoriList.forEach(k=>{let opt=document.createElement("option");opt.value=k;opt.textContent=k;kategoriEl.appendChild(opt);});
-kategoriEl.addEventListener("change",()=>{ruanganEl.innerHTML='<option value="" disabled selected>-- Pilih Ruangan --</option>';ROOMS.filter(r=>r.kategori==kategoriEl.value).forEach(r=>{let opt=document.createElement("option");opt.value=r.key;opt.textContent=r.name;ruanganEl.appendChild(opt);});});
-LAMPS.forEach(l=>{let opt=document.createElement("option");opt.value=l.index;opt.textContent=l.name+" ["+l.watt+"W | "+l.lumen+"lm]";lampSelect.appendChild(opt);});
+/* ======= Tabs ======= */
+const tabMode1 = document.getElementById('tabMode1');
+const tabMode2 = document.getElementById('tabMode2');
+const mode1 = document.getElementById('mode1');
+const mode2 = document.getElementById('mode2');
+tabMode1.addEventListener('click', ()=>{ mode1.classList.add('visible'); mode2.classList.remove('visible'); tabMode1.classList.remove('inactive'); tabMode2.classList.add('inactive'); });
+tabMode2.addEventListener('click', ()=>{ mode2.classList.add('visible'); mode1.classList.remove('visible'); tabMode2.classList.remove('inactive'); tabMode1.classList.add('inactive'); });
 
-// ===== Mode Switch =====
-const btnMode1=document.getElementById("btnMode1");
-const btnMode2=document.getElementById("btnMode2");
-const mode1Div=document.getElementById("mode1");
-const mode2Div=document.getElementById("mode2");
-btnMode1.addEventListener("click",()=>{mode1Div.classList.remove("hidden");mode2Div.classList.add("hidden");btnMode1.classList.add("active");btnMode2.classList.remove("active");});
-btnMode2.addEventListener("click",()=>{mode2Div.classList.remove("hidden");mode1Div.classList.add("hidden");btnMode2.classList.add("active");btnMode1.classList.remove("active");});
+document.getElementById('year').textContent = new Date().getFullYear();
 
-document.getElementById("year").textContent=new Date().getFullYear();
-
-// ===== Canvas =====
-const canvas=document.getElementById("layoutCanvas");
-const ctx=canvas.getContext("2d");
-function drawLayout(points){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  points.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,12,0,2*Math.PI);ctx.fillStyle="#00aaff";ctx.fill();ctx.strokeStyle="#0077cc";ctx.lineWidth=2;ctx.stroke();});
+/* ======= Mode 1: Layout & calculations (SVG) ======= */
+const roomSvg = document.getElementById('roomSvg');
+function clearSvg(){ while(roomSvg.lastChild && roomSvg.lastChild.tagName!=='rect') roomSvg.removeChild(roomSvg.lastChild); }
+function drawPoints(points, roomW, roomH){
+  clearSvg();
+  // scale to viewBox 1000x600
+  const vbW=1000, vbH=600;
+  const sx = vbW/roomW;
+  const sy = vbH/roomH;
+  const s = Math.min(sx, sy);
+  // Draw walls guide
+  const margin=20;
+  // Draw points with labels
+  points.forEach((p,i)=>{
+    const cx = Math.round( p.x * s );
+    const cy = Math.round( p.y * s );
+    // circle
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', 10); c.setAttribute('fill','#00aaff'); c.setAttribute('stroke','#0077cc'); c.setAttribute('stroke-width',2);
+    roomSvg.appendChild(c);
+    // label
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', cx+14); t.setAttribute('y', cy+6); t.setAttribute('font-size',14); t.setAttribute('fill','#083247'); t.textContent = #${i+1};
+    roomSvg.appendChild(t);
+  });
 }
-
-// ===== Mode 1 Calculation (lanjutan) =====
-document.getElementById("calcMode1").addEventListener("click",()=>{
-  const ruanganKey=ruanganEl.value;
-  const lampIdx=parseInt(lampSelect.value);
-  const length=parseFloat(document.getElementById("length").value);
-  const width=parseFloat(document.getElementById("width").value);
-  const eta=parseFloat(document.getElementById("eta").value);
-  const warningEl=document.getElementById("warning");
-  warningEl.classList.add("hidden"); warningEl.textContent="";
-  if(!ruanganKey||isNaN(lampIdx)||isNaN(length)||isNaN(width)){alert("Isi semua field!");return;}
-  const ruangan=ROOMS.find(r=>r.key==ruanganKey);
-  const lamp=LAMPS.find(l=>l.index==lampIdx);
-  const area=length*width;
-  const totalLum=ruangan.lux*area/eta;
-  const lampCount=Math.ceil(totalLum/lamp.lumen);
-  const va=lamp.watt*lampCount;
-  const arus=va/220;
-
-  // Layout grid
-  const points=[]; 
-  const cols=Math.ceil(Math.sqrt(lampCount)); 
-  const rows=Math.ceil(lampCount/cols);
-  for(let r=0;r<rows;r++){
-    let rowCount=(r<rows-1)?cols:(lampCount-(cols*(rows-1)));
+function euclid(a,b){ return Math.sqrt( (a.x-b.x)*2 + (a.y-b.y)*2 ); }
+document.getElementById('calcMode1').addEventListener('click', ()=>{
+  const ruanganKey = ruanganEl.value;
+  const lampIdx = parseInt(lampSelect.value);
+  const length = parseFloat(document.getElementById('length').value);
+  const width = parseFloat(document.getElementById('width').value);
+  const eta = parseFloat(document.getElementById('eta').value) || 0.8;
+  if(!ruanganKey || isNaN(lampIdx) || isNaN(length) || isNaN(width)){ alert('Lengkapi field Mode 1: pilih ruangan, lampu, panjang & lebar.'); return; }
+  const ruangan = ROOMS.find(r=>r.key===ruanganKey);
+  const lamp = LAMPS.find(l=>l.index===lampIdx);
+  const area = length * width;
+  const totalLum = (ruangan.lux * area) / eta;
+  const lampCount = Math.max(1, Math.ceil(totalLum / lamp.lumen));
+  const totalWatt = lamp.watt * lampCount;
+  const va = totalWatt; // assume VA ~= W for LED
+  const arus = va / 220;
+  // layout grid
+  const cols = Math.ceil(Math.sqrt(lampCount));
+  const rows = Math.ceil(lampCount/cols);
+  const points = [];
+  for(let r=0, placed=0; r<rows; r++){
+    const rowCount = (r===rows-1)? (lampCount - (cols*(rows-1))) : cols;
     for(let c=0;c<rowCount;c++){
-      points.push({x:(c+1)*canvas.width/(cols+1), y:(r+1)*canvas.height/(rows+1)});
+      // distribute in room coordinates (meters)
+      const x = ( (c+1) * (width / (rowCount+1)) );
+      const y = ( (r+1) * (length / (rows+1)) );
+      points.push({x, y});
+      placed++;
+      if(placed>=lampCount) break;
     }
   }
-  drawLayout(points);
-  if(rows*cols!==lampCount){warningEl.textContent="⚠ Jumlah lampu per baris tidak merata!";warningEl.classList.remove("hidden");}
+  // distances: nearest neighbor (in meters using room coords)
+  const dists = points.map((p,i)=>{
+    let min = Infinity;
+    for(let j=0;j<points.length;j++){ if(i===j) continue; min=Math.min(min, euclid(p,points[j])); }
+    return min===Infinity?0:min;
+  });
+  const avgNearest = dists.reduce((s,n)=>s+n,0)/ (dists.length||1);
+  // distance to walls (left,right,top,bottom) — for each point take minimum
+  const distToWalls = points.map(p=>Math.min(p.x, width - p.x, p.y, length - p.y));
+  const avgWall = distToWalls.reduce((s,n)=>s+n,0)/(distToWalls.length||1);
 
-  document.getElementById("resultMode1").textContent=
+  // draw -> scale treated inside drawPoints with room width/height (use width=width, height=length)
+  drawPoints(points, width, length);
+
+  // display result
+  document.getElementById('resultMode1').textContent = 
 `Ruangan: ${ruangan.name}
 Luas: ${area.toFixed(2)} m²
-Lux Standar: ${ruangan.lux} lx
-Lampu Pilihan: ${lamp.name} (${lamp.watt}W | ${lamp.lumen}lm)
-Jumlah Lampu: ${lampCount} buah
-Total Watt (VA): ${va} W
+Lux standar: ${ruangan.lux} lx
+Lampu: ${lamp.name} (${lamp.watt} W | ${lamp.lumen} lm)
+Jumlah lampu: ${lampCount} buah
+Total Watt (≈VA): ${totalWatt} W
 Arus (A): ${arus.toFixed(2)} A`;
+
+  document.getElementById('distResult').textContent = Rata-rata jarak antar lampu: ${avgNearest.toFixed(2)} m • Rata-rata jarak ke dinding: ${avgWall.toFixed(2)} m;
 });
 
-// ===== Mode 2 Dynamic Groups =====
-const groupsContainer=document.getElementById("groupsContainer");
-let groupCount=0;
-document.getElementById("addGroup").addEventListener("click",()=>{
-  groupCount++;
-  const groupDiv=document.createElement("div");
-  groupDiv.classList.add("card");
-  groupDiv.style.marginTop="15px";
-  groupDiv.id="group_"+groupCount;
-  groupDiv.innerHTML=`
-<h3>Grup Lampu ${groupCount}</h3>
-<div class="input-row">
-  <div>
-    <label>Jumlah Lampu</label>
-    <input type="number" class="lampQty" placeholder="Contoh: 5">
-  </div>
-  <div>
-    <label>Pilih Lampu</label>
-    <select class="lampType"><option value="" disabled selected>-- Pilih Lampu --</option></select>
-  </div>
-  <div>
-    <label>MCB Grup (A)</label>
-    <input type="number" class="mcbGroup" placeholder="Contoh: 10">
-  </div>
-</div>`;
+/* ======= Mode 2: KKK & MCB ======= */
+const kkkListEl = document.getElementById('kkkList');
+const addKKKBtn = document.getElementById('addKKK');
+const clearKKKBtn = document.getElementById('clearKKK');
+const groupCountEl = document.getElementById('groupCount');
+const useMainEl = document.getElementById('useMainMCB');
+let kkkRows = []; // array of {id, name, count, va, group}
 
-  // Populate lamp options
-  const sel=groupDiv.querySelector(".lampType");
-  LAMPS.forEach(l=>{let opt=document.createElement("option");opt.value=l.index;opt.textContent=l.name+" ["+l.watt+"W | "+l.lumen+"lm]";sel.appendChild(opt);});
-  groupsContainer.appendChild(groupDiv);
+function createVADropdown(value=100){
+  const sel = document.createElement('select');
+  // presets 50..2000 step 50
+  for(let v=50; v<=2000; v+=50){
+    const o = document.createElement('option'); o.value=v; o.textContent=${v} VA; if(v===value) o.selected=true; sel.appendChild(o);
+  }
+  // add manual option
+  const mo = document.createElement('option'); mo.value='manual'; mo.textContent='Manual...'; sel.appendChild(mo);
+  return sel;
+}
+function addKKKRow(defaults={}){
+  const id = Date.now()+Math.random().toString(16).slice(2,6);
+  const row = document.createElement('div'); row.className='kkk-row card'; row.dataset.id=id;
+  const nameInp = document.createElement('input'); nameInp.type='text'; nameInp.placeholder='Deskripsi (mis: Lampu TL)'; nameInp.value=defaults.name||'';
+  const countInp = document.createElement('input'); countInp.type='number'; countInp.min=1; countInp.value=defaults.count||1;
+  const vaWrap = document.createElement('div');
+  const vaSel = createVADropdown(defaults.va||100);
+  vaWrap.appendChild(vaSel);
+  // manual input hidden initial
+  const vaManual = document.createElement('input'); vaManual.type='number'; vaManual.min=1; vaManual.placeholder='VA manual'; vaManual.style.display='none'; vaWrap.appendChild(vaManual);
+
+  // group select
+  const gsel = document.createElement('select'); gsel.style.width='100%';
+  for(let i=1;i<=6;i++){ const o=document.createElement('option'); o.value=i; o.textContent=Grup ${i}; if(i==groupCountEl.value) o.selected=true; gsel.appendChild(o); }
+  // delete button
+  const del = document.createElement('button'); del.className='btn ghost'; del.textContent='❌'; del.title='Hapus baris';
+  // assemble
+  // reorder: name | count | vaWrap | actions -> adjust to grid columns
+  row.appendChild(nameInp);
+  const cwrap = document.createElement('div'); cwrap.style.display='flex'; cwrap.style.flexDirection='column';
+  const lblCount = document.createElement('div'); lblCount.className='small-muted'; lblCount.textContent='Jumlah';
+  cwrap.appendChild(lblCount); cwrap.appendChild(countInp);
+  row.appendChild(cwrap);
+  const vcol = document.createElement('div'); vcol.style.display='flex'; vcol.style.flexDirection='column';
+  const lblVA = document.createElement('div'); lblVA.className='small-muted'; lblVA.textContent='VA / titik';
+  vcol.appendChild(lblVA); vcol.appendChild(vaWrap);
+  row.appendChild(vcol);
+  const gcol = document.createElement('div'); gcol.style.display='flex'; gcol.style.flexDirection='column';
+  const lblG = document.createElement('div'); lblG.className='small-muted'; lblG.textContent='Grup';
+  gcol.appendChild(lblG); gcol.appendChild(gsel);
+  row.appendChild(gcol);
+
+  kkkListEl.appendChild(row);
+
+  // events
+  vaSel.addEventListener('change', ()=>{
+    if(vaSel.value==='manual'){ vaManual.style.display='block'; vaManual.focus(); } else { vaManual.style.display='none'; }
+  });
+  del.addEventListener('click', ()=>{ row.remove(); kkkRows = kkkRows.filter(r=>r.id!==id); });
+  // store
+  kkkRows.push({id, el: row, nameInp, countInp, vaSel, vaManual, groupSel: gsel});
+  // append delete as overlay action
+  const actions = document.createElement('div'); actions.style.display='flex'; actions.style.alignItems='center'; actions.style.gap='8px'; actions.style.marginTop='6px';
+  actions.appendChild(del);
+  row.appendChild(actions);
+  return id;
+}
+addKKKBtn.addEventListener('click', ()=> addKKKRow());
+clearKKKBtn.addEventListener('click', ()=>{ kkkListEl.innerHTML=''; kkkRows=[]; });
+
+groupCountEl.addEventListener('change', ()=>{
+  // update each kkk row group options to max
+  const max = parseInt(groupCountEl.value||1);
+  kkkRows.forEach(r=>{
+    const sel = r.groupSel;
+    const cur = sel.value;
+    sel.innerHTML='';
+    for(let i=1;i<=max;i++){ const o=document.createElement('option'); o.value=i; o.textContent=Grup ${i}; sel.appendChild(o); }
+    if(cur <= max) sel.value = cur;
+  });
 });
 
-// ===== Mode 2 Calculation =====
-document.getElementById("calcMode2").addEventListener("click",()=>{
-  const kkkCount=parseInt(document.getElementById("kkkCount").value);
-  const phase=document.getElementById("mcbType").value;
-  const eta=parseFloat(document.getElementById("effMode2").value);
-  if(isNaN(kkkCount)||kkkCount<1){alert("Isi jumlah KKK valid!");return;}
-  if(groupCount<1){alert("Tambahkan minimal 1 grup lampu!");return;}
-  const results=[];
-  let totalVA=0, totalAmps=0;
-  for(let i=1;i<=groupCount;i++){
-    const grp=document.getElementById("group_"+i);
-    const qty=parseInt(grp.querySelector(".lampQty").value);
-    const lampIdx=parseInt(grp.querySelector(".lampType").value);
-    const mcb=parseFloat(grp.querySelector(".mcbGroup").value);
-    if(isNaN(qty)||isNaN(lampIdx)||isNaN(mcb)){alert("Isi semua field Grup "+i+"!");return;}
-    const lamp=LAMPS.find(l=>l.index==lampIdx);
-    const va=(lamp.watt*qty)/eta;
-    const arus=va/220;
-    totalVA+=va; totalAmps+=arus;
-    results.push({grup:i,lamp:lamp.name,qty:qty,va:va.toFixed(2),amp:arus.toFixed(2),mcb:mcb});
+/* ======= Helper: choose MCB rating from amp value (next standard) ======= */
+const MCB_SIZES = [1,2,4,6,10,16,20,25,32,40,50,63,80,100,125,160];
+function recommendMCB(amp){
+  // safety margin 1.25 (20-25%) is common; we apply factor 1.25 then pick nearest larger MCB
+  const required = amp * 1.25;
+  for(const s of MCB_SIZES){
+    if(s >= required) return s;
+  }
+  return MCB_SIZES[MCB_SIZES.length-1];
+}
+
+/* ======= Calculation Mode 2 ======= */
+function parseRow(r){
+  const name = r.nameInp.value.trim() || 'KKK';
+  const count = Number(r.countInp.value) || 0;
+  const vaVal = r.vaSel.value === 'manual' ? Number(r.vaManual.value || 0) : Number(r.vaSel.value || 0);
+  const group = Number(r.groupSel.value) || 1;
+  return {name, count, vaPer: vaVal, group};
+}
+
+document.getElementById('calcMode2').addEventListener('click', ()=>{
+  if(kkkRows.length === 0){ alert('Tambahkan minimal 1 KKK.'); return; }
+  // aggregate per group
+  const groups = {};
+  const groupCount = Number(groupCountEl.value) || 1;
+  for(let i=1;i<=groupCount;i++){ groups[i] = {items:[], totalVA:0, totalW:0, totalCount:0}; }
+  let grandTotalVA = 0, grandTotalCount = 0;
+  for(const r of kkkRows){
+    const parsed = parseRow(r);
+    if(parsed.count<=0 || parsed.vaPer<=0){ alert('Pastikan setiap KKK memiliki jumlah & VA yang valid.'); return; }
+    const totalVA = parsed.count * parsed.vaPer;
+    groups[parsed.group].items.push({descr:parsed.name, count:parsed.count, vaPer:parsed.vaPer, totalVA});
+    groups[parsed.group].totalVA += totalVA;
+    groups[parsed.group].totalW += totalVA; // treat VA ~ W for simplicity
+    groups[parsed.group].totalCount += parsed.count;
+    grandTotalVA += totalVA; grandTotalCount += parsed.count;
   }
 
-  // Generate table
-  let html=<table><tr><th>Grup</th><th>Lampu</th><th>Jumlah</th><th>VA</th><th>Arus (A)</th><th>MCB Grup (A)</th></tr>;
-  results.forEach(r=>{html+=<tr><td>${r.grup}</td><td>${r.lamp}</td><td>${r.qty}</td><td>${r.va}</td><td>${r.amp}</td><td>${r.mcb}</td></tr>;});
-  // MCB Utama
-  let mcbMain=0;
-  if(phase==="1phase"){mcbMain=Math.ceil(totalAmps);}
-  else{mcbMain=Math.ceil(totalAmps/3);}
-  html+=<tr><th colspan="3">Total</th><th>${totalVA.toFixed(2)} VA</th><th>${totalAmps.toFixed(2)} A</th><th>MCB Utama: ${mcbMain} A</th></tr></table>;
-  document.getElementById("resultMode2").innerHTML=html;
+  // compute amps & recommended MCB (assume single-phase 220V unless user chooses otherwise in future)
+  const phase = '1phase'; // future: allow selection
+  const voltage = (phase === '1phase') ? 220 : 400; // basic
+  const groupResults = [];
+  let sumCurrents = 0;
+  for(let i=1;i<=groupCount;i++){
+    const g = groups[i];
+    const I = (g.totalVA) / voltage;
+    const mcb = recommendMCB(I);
+    groupResults.push({group:i, count:g.totalCount, totalVA: g.totalVA, current:I, mcb});
+    sumCurrents += I;
+  }
+
+  // main MCB if needed: compute total current and pick
+  const useMain = (useMainEl.value === 'yes');
+  const mainCurrent = sumCurrents;
+  const mainMCB = useMain ? recommendMCB(mainCurrent) : null;
+
+  // render table
+  const resultArea = document.getElementById('resultArea'); resultArea.innerHTML = '';
+  const tableWrap = document.createElement('div'); tableWrap.className='card';
+  const tbl = document.createElement('table');
+  const thead = document.createElement('thead'); thead.innerHTML=<tr><th>Grup</th><th>Jumlah Titik</th><th>Total VA</th><th>Arus (A)</th><th>Rekom. MCB (A)</th></tr>;
+  tbl.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  groupResults.forEach(gr=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = <td>Grup ${gr.group}</td><td>${gr.count}</td><td>${gr.totalVA} VA</td><td>${gr.current.toFixed(2)}</td><td>${gr.mcb} A</td>;
+    tbody.appendChild(tr);
+  });
+  const tfoot = document.createElement('tfoot');
+  const totalRow = document.createElement('tr'); totalRow.innerHTML = <td><strong>Total</strong></td><td><strong>${grandTotalCount}</strong></td><td><strong>${grandTotalVA} VA</strong></td><td><strong>${(sumCurrents).toFixed(2)} A</strong></td><td><strong>${useMain ? mainMCB + ' A (Utama)' : '-'}</strong></td>;
+  tfoot.appendChild(totalRow);
+  tbl.appendChild(tbody); tbl.appendChild(tfoot);
+  tableWrap.appendChild(tbl);
+  resultArea.appendChild(tableWrap);
+
+  // build rekapitulasi textual output (group breakdown + per-beban list)
+  let rekap = 'REKAPITULASI DAYA\n\n';
+  for(const g of groupResults){
+    rekap += Grup ${g.group} — Jumlah Titik: ${g.count} • Total VA: ${g.totalVA} VA • Arus: ${g.current.toFixed(2)} A • Rekom MCB: ${g.mcb} A\n;
+    // list items in that group
+    const items = groups[g.group].items;
+    if(items.length){
+      items.forEach(it=>{ rekap += `  - ${it.descr}: ${it.count} titik × ${it.vaPer} VA = ${it.totalVA} VA\n`; });
+    }
+    rekap += '\n';
+  }
+  rekap += TOTAL: ${grandTotalCount} titik • ${grandTotalVA} VA • ${sumCurrents.toFixed(2)} A\n;
+  if(useMain) rekap += MCB UTAMA (rekomendasi): ${mainMCB} A\n;
+
+  // show detailed summary card
+  const summary = document.createElement('div'); summary.className='summary';
+  summary.textContent = rekap;
+  resultArea.appendChild(summary);
+
+  // Also show breakdown per item (compact)
+  const compact = document.createElement('div'); compact.className='card';
+  compact.innerHTML = <div style="font-weight:800;margin-bottom:6px">Detail Titik Beban</div>;
+  const list = document.createElement('div'); list.className='small-muted';
+  Object.values(groups).forEach((g, idx)=>{
+    if(g.items.length){
+      g.items.forEach(it=>{
+        const el = document.createElement('div'); el.textContent = ${it.descr} — ${it.count} titik — ${it.totalVA} VA; list.appendChild(el);
+      });
+    }
+  });
+  compact.appendChild(list); resultArea.appendChild(compact);
 });
+
+/* ======= Initialize with 2 KKK rows sample ======= */
+addKKKRow({name:'Lampu TL',count:10,va:100});
+addKKKRow({name:'Stopkontak',count:6,va:150});
 </script>
 </body>
 </html>
