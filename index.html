@@ -1,648 +1,657 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Lighting Planner Premium</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Smart Lighting Planner</title>
 <style>
-:root {
-  --primary: #00aaff;
-  --primary-dark: #0077cc;
-  --bg-light: #f5f7fa;
-  --bg-dark: #1e1e2f;
-  --text-light: #fff;
-  --text-dark: #333;
-  --card-light: #fff;
-  --card-dark: #2b2b3c;
-  --border-light: #ccc;
-  --border-dark: #444;
+:root{
+  --primary:#00aaff;
+  --primary-dark:#0077cc;
+  --bg-light:#f5f7fa;
+  --bg-dark:#12121b;
+  --card-light:#fff;
+  --card-dark:#1f1f2a;
+  --text-dark:#222;
+  --text-light:#f4f6ff;
+  --muted:#6b6f76;
+  --glass: rgba(255,255,255,0.06);
 }
-
-body {
-  margin: 0; padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--bg-light);
-  color: var(--text-dark);
-  transition: 0.4s;
-}
-
-body.dark {
-  background: var(--bg-dark);
-  color: var(--text-light);
-}
-
-header {
-  background: linear-gradient(90deg, var(--primary-dark), var(--primary));
-  color: #fff;
-  text-align: center;
-  padding: 35px 15px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  position: relative;
-}
-
-header h1 {
-  font-size: 2em; margin: 0;
-}
-
-header p {
-  opacity: 0.9;
-}
-
-#toggleDark {
-  position: absolute;
-  right: 15px; top: 15px;
-  background: rgba(255,255,255,0.2);
-  border: none; color: #fff;
-  padding: 8px 15px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-#toggleDark:hover { background: rgba(255,255,255,0.3); }
-
-.wrap {
-  max-width: 1100px; margin: 25px auto; padding: 0 20px;
-}
-
-.card {
-  background: var(--card-light);
-  color: inherit;
-  border-radius: 15px;
-  padding: 25px;
-  margin-bottom: 25px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  transition: 0.3s;
-}
-body.dark .card { background: var(--card-dark); box-shadow: 0 4px 15px rgba(255,255,255,0.05); }
-
-.btn {
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  margin: 5px;
-  transition: 0.3s;
-}
-.btn:hover { transform: translateY(-2px); }
-.mode-btn {
-  background: var(--primary-dark);
-  color: #fff;
-}
-.mode-btn.active { background: var(--primary); }
-
-button.primary { background: var(--primary); color: #fff; }
-button.outline {
-  background: transparent;
-  border: 2px solid var(--primary);
-  color: var(--primary);
-}
-body.dark button.outline { border-color: #00aaff; color: #00aaff; }
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
-  gap: 20px;
-}
-
-label { display: block; margin-bottom: 6px; font-weight: 600; }
-input, select {
-  width: 100%; padding: 10px;
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
-  font-size: 1em;
-}
-body.dark input, body.dark select {
-  background: #333;
-  color: #fff;
-  border-color: var(--border-dark);
-}
-.result-block {
-  margin-top: 15px;
-  padding: 15px;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.05);
-  white-space: pre-wrap;
-  font-family: monospace;
-}
-body.dark .result-block { background: rgba(255,255,255,0.05); }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-table th, table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
-}
-body.dark table th, body.dark table td {
-  border-color: #444;
-}
-table th {
-  background: var(--primary);
-  color: #fff;
-}
-canvas, svg {
-  width: 100%; height: auto;
-  margin-top: 15px;
-  border-radius: 10px;
-  border: 1px solid var(--primary);
-}
-.hidden { display: none; }
-
-footer {
-  text-align: center;
-  padding: 20px;
-  font-weight: 600;
-  background: rgba(0,0,0,0.05);
-  border-top: 1px solid #ccc;
-  margin-top: 30px;
-}
-body.dark footer { background: rgba(255,255,255,0.05); border-top-color: #444; }
-
-.warning { color: red; font-weight: 700; margin-top: 10px; }
-body.dark .warning { color: #ff8080; }
-
-@media(max-width:600px){
-  header h1{font-size:1.6em;}
-  .btn{padding:8px 15px;}
-  table{font-size:0.9em; overflow-x:auto; display:block;}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:var(--bg-light);color:var(--text-dark);transition:background .25s,color .25s;}
+body.dark{background:var(--bg-dark);color:var(--text-light);}
+.header{background:linear-gradient(90deg,var(--primary-dark),var(--primary));color:#fff;padding:28px 18px;text-align:center;position:relative;}
+.header h1{margin:0;font-size:1.6rem}
+.header p{margin:6px 0 0;opacity:.92}
+#toggleDark{position:absolute;right:14px;top:14px;background:rgba(255,255,255,0.12);border:0;padding:8px 12px;border-radius:10px;color:#fff;cursor:pointer}
+.wrap{max-width:1100px;margin:22px auto;padding:0 18px;}
+.card{background:var(--card-light);padding:18px;border-radius:12px;margin-bottom:18px;box-shadow:0 8px 24px rgba(2,6,23,0.06);}
+body.dark .card{background:var(--card-dark);box-shadow:0 6px 18px rgba(0,0,0,0.4);}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.col{flex:1;min-width:180px}
+label{display:block;font-weight:600;margin-bottom:6px;font-size:0.92rem}
+input[type=number],select,input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #d6dbe0;background:transparent;font-size:0.95rem}
+body.dark input,body.dark select{border-color:#333;color:var(--text-light);background:transparent}
+.btn{display:inline-block;padding:9px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+.btn.primary{background:var(--primary);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--primary);color:var(--primary)}
+.btn.warn{background:#ffce00;color:#222}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mode-toggle{display:flex;gap:8px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.small{font-size:0.9rem;color:var(--muted)}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{border:1px solid #dcdfe6;padding:8px;text-align:center;font-size:0.95rem}
+th{background:var(--primary);color:#fff}
+body.dark th,body.dark td{border-color:#333}
+.result-block{margin-top:12px;padding:12px;border-radius:8px;background:rgba(0,0,0,0.03);font-family:monospace;white-space:pre-line}
+body.dark .result-block{background:rgba(255,255,255,0.03)}
+.group-card{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(0,170,255,0.04),transparent);border:1px solid rgba(0,170,255,0.08)}
+body.dark .group-card{background:linear-gradient(180deg,rgba(0,170,255,0.04),transparent)}
+.flex-between{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.kv{font-weight:700}
+.small-btn{padding:6px 10px;border-radius:8px;font-weight:700}
+.footer{padding:18px;text-align:center;border-top:1px solid #e6e9ef;margin-top:24px}
+body.dark .footer{border-top-color:#222}
+.logo-inline{display:inline-flex;align-items:center;gap:8px}
+.logo-svg{width:28px;height:28px;border-radius:6px;overflow:hidden}
+.warning{color:#d63; font-weight:700;margin-top:8px}
+@media(max-width:640px){
+  .header h1{font-size:1.2rem}
+  .row{flex-direction:column}
+  table th,table td{font-size:0.85rem}
 }
 </style>
 </head>
 <body>
-<header>
-  <h1>Smart Lighting Planner Premium</h1>
-  <p>Hitung Lampu, Layout, Watt & MCB dengan Akurasi SNI</p>
-  <button id="toggleDark">🌙</button>
-</header>
+  <header class="header">
+    <h1>Smart Lighting Planner Premium</h1>
+    <p>Mode 1 — Layout Lampu & Mode 2 — Grup Lampu + KKK (VA) + MCB</p>
+    <button id="toggleDark" aria-label="toggle dark">🌙</button>
+  </header>
 
-<div class="wrap">
-  <div class="card" style="text-align:center;">
-    <button class="btn mode-btn active" id="btnMode1">Hitung— Lampu (per titik)</button>
-    <button class="btn mode-btn" id="btnMode2"> KKK & lampu - MCB</button>
-  </div>
-
-  <!-- MODE 1 -->
-  <div id="mode1" class="card">
-    <div class="grid-2">
-      <div>
-        <label>Kategori Ruangan</label>
-        <select id="kategori"></select>
+  <main class="wrap">
+    <div class="card controls">
+      <div class="mode-toggle">
+        <button id="btnMode1" class="btn primary">Mode 1 — Lampu</button>
+        <button id="btnMode2" class="btn ghost">Mode 2 — Grup & KKK</button>
       </div>
-      <div>
-        <label>Jenis Ruangan</label>
-        <select id="ruangan"></select>
-      </div>
-      <div>
-        <label>Panjang (m)</label>
-        <input type="number" id="length" placeholder="5">
-      </div>
-      <div>
-        <label>Lebar (m)</label>
-        <input type="number" id="width" placeholder="4">
-      </div>
-      <div>
-        <label>Efisiensi η</label>
-        <input type="number" id="eta" value="0.8" step="0.01">
-      </div>
-      <div>
-        <label>Pilih Lampu</label>
-        <select id="lampSelect"></select>
-      </div>
+      <div class="small" style="margin-left:auto">Versi: <span id="version">2.0</span></div>
     </div>
-    <button class="btn primary" id="calcMode1">Hitung & Layout</button>
-    <button class="btn outline" id="reset1">Reset</button>
-    <div class="warning hidden" id="warning1"></div>
-    <div id="resultMode1" class="result-block"></div>
-    <svg id="lampLayout" viewBox="0 0 600 400"></svg>
-  </div>
 
-  <!-- MODE 2 -->
-  <div id="mode2" class="card hidden">
-    <div id="groupsContainer"></div>
-    <button class="btn outline" id="addGroup">➕ Tambah Grup Lampu</button>
-    <button class="btn primary" id="calcMode2">Hitung Mode 2</button>
-    <div id="resultMode2" class="result-block"></div>
-    <div style="overflow-x:auto;">
-      <table id="resultTable">
-        <thead>
-          <tr><th>Grup</th><th>Jumlah Lampu</th><th>Lampu</th><th>Total Watt</th><th>Total VA</th><th>Arus (A)</th><th>Rek. MCB</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+    <!-- MODE 1 -->
+    <section id="mode1" class="card">
+      <div class="grid-2">
+        <div>
+          <label>Kategori Ruangan</label>
+          <select id="kategori"></select>
+        </div>
+        <div>
+          <label>Jenis Ruangan</label>
+          <select id="ruangan"><option value="">-- Pilih --</option></select>
+        </div>
+        <div>
+          <label>Panjang (m)</label>
+          <input type="number" id="length" min="0" step="0.1" placeholder="5">
+        </div>
+        <div>
+          <label>Lebar (m)</label>
+          <input type="number" id="width" min="0" step="0.1" placeholder="4">
+        </div>
+        <div>
+          <label>Efisiensi η</label>
+          <input type="number" id="eta" min="0.1" max="1" step="0.01" value="0.8">
+        </div>
+        <div>
+          <label>Pilih Lampu</label>
+          <select id="lampSelect"></select>
+        </div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button id="calcMode1" class="btn primary">Hitung & Layout</button>
+        <button id="reset1" class="btn ghost">Reset</button>
+      </div>
+      <div id="warning1" class="warning" style="display:none"></div>
+      <div id="resultMode1" class="result-block"></div>
+      <svg id="lampLayout" viewBox="0 0 600 360" style="width:100%;height:320px;border-radius:8px;margin-top:12px;border:1px solid rgba(0,0,0,0.06)"></svg>
+    </section>
 
-<footer>&copy; <span id="year"></span> by @bah</footer>
+    <!-- MODE 2 -->
+    <section id="mode2" class="card" style="display:none">
+      <div class="flex-between" style="margin-bottom:12px;gap:10px;align-items:flex-start;flex-wrap:wrap">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="addGroup" class="btn primary">➕ Tambah Grup</button>
+          <button id="clearGroups" class="btn ghost">🧹 Clear Semua Grup</button>
+        </div>
 
-<script>
-// ===== DARK MODE =====
-const toggleDark=document.getElementById('toggleDark');
-toggleDark.addEventListener('click',()=>{document.body.classList.toggle('dark');toggleDark.textContent=document.body.classList.contains('dark')?'☀️':'🌙';});
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <label style="margin:0">Tegangan MCB Utama</label>
+          <select id="mainSupply" style="min-width:160px;padding:8px;border-radius:8px;border:1px solid #d6dbe0">
+            <option value="1p">1P — Single Phase (220V)</option>
+            <option value="3p">3P — Three Phase (380V, √3)</option>
+          </select>
+          <button id="calcMode2" class="btn warn">Hitung Mode 2</button>
+        </div>
+      </div>
 
-// ===== DATA =====
-const ROOMS=[
-  {key:"teras_rumah", name:"Teras (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal. lux:100", lux:100},
-  {key:"ruang_tamu", name:"Ruang Tamu (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal. lux:150", lux:150},
-  {key:"kamar_tidur", name:"Kamar Tidur (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal. lux:150", lux:150},
-  {key:"dapur", name:"Dapur (Rumah Tinggal). lux: 250", kategori:"Rumah Tinggal. lux:250", lux:250},
-  {key:"garasi", name:"Garasi (Rumah Tinggal). lux: 75", kategori:"Rumah Tinggal. lux:75", lux:75},
-  {key:"koridor_rumah", name:"Koridor (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal. lux:100", lux:100},
+      <div id="groupsContainer" style="display:flex;flex-direction:column;gap:12px"></div>
 
-  {key:"ruang_rapat", name:"Ruang Rapat (Perkantoran). lux: 300", kategori:"Perkantoran. lux:300", lux:300},
-  {key:"ruang_direktur", name:"Ruang Direktur (Perkantoran). lux: 350", kategori:"Perkantoran. lux:350", lux:350},
-  {key:"open_office", name:"Open Office (Perkantoran). lux: 350", kategori:"Perkantoran. lux:350", lux:350},
-  {key:"ruang_komputer", name:"Ruang Komputer (Perkantoran). lux: 500", kategori:"Perkantoran. lux:500", lux:500},
-  {key:"resepsionis", name:"Resepsionis (Perkantoran). lux: 300", kategori:"Perkantoran. lux:300", lux:300},
+      <div id="resultMode2" class="result-block" style="margin-top:12px"></div>
 
-  {key:"kelas", name:"Ruang Kelas (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan. lux:300", lux:300},
-  {key:"lab_komputer", name:"Laboratorium Komputer (Lembaga Pendidikan). lux: 500", kategori:"Lembaga Pendidikan. lux:500", lux:500},
-  {key:"perpustakaan", name:"Perpustakaan (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan. lux:300", lux:300},
-  {key:"ruang_gambar", name:"Ruang Gambar (Lembaga Pendidikan). lux: 750", kategori:"Lembaga Pendidikan. lux:750", lux:750},
+      <div class="table-wrap" style="margin-top:12px">
+        <table id="resultTable" aria-live="polite">
+          <thead>
+            <tr>
+              <th>Grup</th>
+              <th>Jumlah Lampu</th>
+              <th>Detail Lampu</th>
+              <th>Total Watt (W)</th>
+              <th>Total VA</th>
+              <th>Arus (A)</th>
+              <th>Rek. MCB</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </section>
 
-  {key:"kamar_hotel", name:"Kamar Hotel (Hotel & Restoran). lux: 150", kategori:"Hotel & Restoran. lux:150", lux:150},
-  {key:"lobi_hotel", name:"Lobi Hotel (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran. lux:200", lux:200},
-  {key:"ruang_makan", name:"Ruang Makan (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran. lux:200", lux:200},
-  {key:"dapur_restoran", name:"Dapur Restoran (Hotel & Restoran). lux: 500", kategori:"Hotel & Restoran. lux:500", lux:500},
+    <footer class="footer">
+      <span class="logo-inline">
+        <span class="logo-svg" aria-hidden>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="5" fill="#00aaff"/>
+            <path d="M7 12h10" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M7 8h10" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
+            <path d="M7 16h6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
+          </svg>
+        </span>
+        <strong>Smart Lighting Planner</strong>
+      </span>
+      <div class="small" style="margin-top:8px">&copy; <span id="year"></span> by @bah — All rights reserved</div>
+    </footer>
+  </main>
 
-  {key:"ruang_operasi", name:"Ruang Operasi (Rumah Sakit). lux: 1000", kategori:"Rumah Sakit. lux:1000", lux:1000},
-  {key:"icu", name:"ICU (Rumah Sakit). lux: 300", kategori:"Rumah Sakit. lux:300", lux:300},
-  {key:"rawat_inap", name:"Ruang Rawat Inap (Rumah Sakit). lux: 200", kategori:"Rumah Sakit. lux:200", lux:200},
-  {key:"lab_klinik", name:"Laboratorium Klinik (Rumah Sakit). lux: 750", kategori:"Rumah Sakit. lux:750", lux:750},
+  <!-- ====== PART 1: Data, UI init, Mode toggles, Mode1 logic, and helpers ====== -->
+  <script>
+  // ---------- DATA ----------
+  const ROOMS = [
+   {key:"teras_rumah", name:"Teras (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal. lux:100", lux:100},
+   {key:"ruang_tamu", name:"Ruang Tamu (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal. lux:150", lux:150},
+   {key:"kamar_tidur", name:"Kamar Tidur (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal. lux:150", lux:150},
+   {key:"dapur", name:"Dapur (Rumah Tinggal). lux: 250", kategori:"Rumah Tinggal. lux:250", lux:250},
+   {key:"garasi", name:"Garasi (Rumah Tinggal). lux: 75", kategori:"Rumah Tinggal. lux:75", lux:75},
+   {key:"koridor_rumah", name:"Koridor (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal. lux:100", lux:100},
+ 
+   {key:"ruang_rapat", name:"Ruang Rapat (Perkantoran). lux: 300", kategori:"Perkantoran. lux:300", lux:300},
+   {key:"ruang_direktur", name:"Ruang Direktur (Perkantoran). lux: 350", kategori:"Perkantoran. lux:350", lux:350},
+   {key:"open_office", name:"Open Office (Perkantoran). lux: 350", kategori:"Perkantoran. lux:350", lux:350},
+   {key:"ruang_komputer", name:"Ruang Komputer (Perkantoran). lux: 500", kategori:"Perkantoran. lux:500", lux:500},
+   {key:"resepsionis", name:"Resepsionis (Perkantoran). lux: 300", kategori:"Perkantoran. lux:300", lux:300},
+ 
+   {key:"kelas", name:"Ruang Kelas (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan. lux:300", lux:300},
+   {key:"lab_komputer", name:"Laboratorium Komputer (Lembaga Pendidikan). lux: 500", kategori:"Lembaga Pendidikan. lux:500", lux:500},
+   {key:"perpustakaan", name:"Perpustakaan (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan. lux:300", lux:300},
+   {key:"ruang_gambar", name:"Ruang Gambar (Lembaga Pendidikan). lux: 750", kategori:"Lembaga Pendidikan. lux:750", lux:750},
 
-  {key:"produksi_kasar", name:"Produksi Kasar (Industri). lux: 200", kategori:"Industri. lux:200", lux:200},
-  {key:"perakitan_presisi", name:"Perakitan Presisi (Industri). lux: 1000", kategori:"Industri. lux:1000", lux:1000},
-  {key:"gudang", name:"Gudang (Industri). lux: 150", kategori:"Industri. lux:150", lux:150},
-  {key:"ruang_kontrol", name:"Ruang Kontrol (Industri). lux: 500", kategori:"Industri. lux:500", lux:500},
+   {key:"kamar_hotel", name:"Kamar Hotel (Hotel & Restoran). lux: 150", kategori:"Hotel & Restoran. lux:150", lux:150},
+   {key:"lobi_hotel", name:"Lobi Hotel (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran. lux:200", lux:200},
+   {key:"ruang_makan", name:"Ruang Makan (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran. lux:200", lux:200},
+   {key:"dapur_restoran", name:"Dapur Restoran (Hotel & Restoran). lux: 500", kategori:"Hotel & Restoran. lux:500", lux:500},
+ 
+   {key:"ruang_operasi", name:"Ruang Operasi (Rumah Sakit). lux: 1000", kategori:"Rumah Sakit. lux:1000", lux:1000},
+   {key:"icu", name:"ICU (Rumah Sakit). lux: 300", kategori:"Rumah Sakit. lux:300", lux:300},
+   {key:"rawat_inap", name:"Ruang Rawat Inap (Rumah Sakit). lux: 200", kategori:"Rumah Sakit. lux:200", lux:200}, 
+   {key:"lab_klinik", name:"Laboratorium Klinik (Rumah Sakit). lux: 750", kategori:"Rumah Sakit. lux:750", lux:750},
 
-  {key:"supermarket", name:"Supermarket (Pertokoan & Mall). lux: 750", kategori:"Pertokoan & Mall. lux:750", lux:750},
-  {key:"etalase", name:"Etalase / Display (Pertokoan & Mall). lux: 1000", kategori:"Pertokoan & Mall. lux:1000", lux:1000},
-  {key:"area_kasir", name:"Area Kasir (Pertokoan & Mall). lux: 500", kategori:"Pertokoan & Mall. lux:500", lux:500},
-  {key:"foodcourt", name:"Foodcourt (Pertokoan & Mall). lux: 300", kategori:"Pertokoan & Mall. lux:300", lux:300},
+   {key:"produksi_kasar", name:"Produksi Kasar (Industri). lux: 200", kategori:"Industri. lux:200", lux:200},
+   {key:"perakitan_presisi", name:"Perakitan Presisi (Industri). lux: 1000", kategori:"Industri. lux:1000", lux:1000},
+   {key:"gudang", name:"Gudang (Industri). lux: 150", kategori:"Industri. lux:150", lux:150},
+   {key:"ruang_kontrol", name:"Ruang Kontrol (Industri). lux: 500", kategori:"Industri. lux:500", lux:500},
 
-  {key:"jalan_utama", name:"Jalan Utama (Outdoor). lux: 20", kategori:"Jalan & Transportasi. lux:20", lux:20},
-  {key:"jalan_lingkungan", name:"Jalan Lingkungan (Outdoor). lux: 10", kategori:"Jalan & Transportasi. lux:10", lux:10},
-  {key:"terminal", name:"Terminal (Jalan & Transportasi). lux: 150", kategori:"Jalan & Transportasi. lux:150", lux:150},
-  {key:"bandara", name:"Bandara / Ruang Tunggu (Jalan & Transportasi). lux: 300", kategori:"Jalan & Transportasi. lux:300", lux:300}
-];
+   {key:"supermarket", name:"Supermarket (Pertokoan & Mall). lux: 750", kategori:"Pertokoan & Mall. lux:750", lux:750},
+   {key:"etalase", name:"Etalase / Display (Pertokoan & Mall). lux: 1000", kategori:"Pertokoan & Mall. lux:1000", lux:1000},
+   {key:"area_kasir", name:"Area Kasir (Pertokoan & Mall). lux: 500", kategori:"Pertokoan & Mall. lux:500", lux:500},
+   {key:"foodcourt", name:"Foodcourt (Pertokoan & Mall). lux: 300", kategori:"Pertokoan & Mall. lux:300", lux:300},
+ 
+   {key:"jalan_utama", name:"Jalan Utama (Outdoor). lux: 20", kategori:"Jalan & Transportasi. lux:20", lux:20},
+   {key:"jalan_lingkungan", name:"Jalan Lingkungan (Outdoor). lux: 10", kategori:"Jalan & Transportasi. lux:10", lux:10},
+   {key:"terminal", name:"Terminal (Jalan & Transportasi). lux: 150", kategori:"Jalan & Transportasi. lux:150", lux:150},
+   {key:"bandara", name:"Bandara / Ruang Tunggu (Jalan & Transportasi). lux: 300", kategori:"Jalan & Transportasi. lux:300", lux:300}
+ ];
 
 const LAMPS = [
-  {index:0,name:"LED Philips 3W. lumen: 240",watt:3,lumen:240},
-  {index:1,name:"LED Philips 5W. lumen: 450",watt:5,lumen:450},
-  {index:2,name:"LED Philips 7W. lumen: 600",watt:7,lumen:600},
-  {index:3,name:"LED Philips 9W. lumen: 800",watt:9,lumen:800},
-  {index:4,name:"LED Philips 12W. lumen: 1055",watt:12,lumen:1055},
-  {index:5,name:"LED Philips 15W. lumen: 1300",watt:15,lumen:1300},
-  {index:6,name:"LED Osram 10W. lumen: 900",watt:10,lumen:900},
-  {index:7,name:"LED Osram 20W. lumen: 1800",watt:20,lumen:1800},
-  {index:8,name:"Downlight LED 12W. lumen: 1000",watt:12,lumen:1000},
-  {index:9,name:"Downlight LED 18W. lumen: 1500",watt:18,lumen:1500},
-  {index:10,name:"Lampu TL 36W. lumen: 3350",watt:36,lumen:3350},
-  {index:11,name:"Lampu TL 58W. lumen: 4000",watt:58,lumen:4000},
-  {index:12,name:"Floodlight LED 30W. lumen: 2700",watt:30,lumen:2700},
-  {index:13,name:"Floodlight LED 50W. lumen: 4500",watt:50,lumen:4500},
-  {index:14,name:"Floodlight LED 70W. lumen: 6300",watt:70,lumen:6300},
-  {index:15,name:"Floodlight LED 100W. lumen: 9000",watt:100,lumen:9000},
-  {index:16,name:"Spotlight LED 5W. lumen: 400",watt:5,lumen:400},
-  {index:17,name:"Spotlight LED 10W. lumen: 900",watt:10,lumen:900}
-];
+   {index:0,name:"LED Philips 3W. lumen: 240",watt:3,lumen:240},
+   {index:1,name:"LED Philips 5W. lumen: 450",watt:5,lumen:450},
+   {index:2,name:"LED Philips 7W. lumen: 600",watt:7,lumen:600},
+   {index:3,name:"LED Philips 9W. lumen: 800",watt:9,lumen:800},
+   {index:4,name:"LED Philips 12W. lumen: 1055",watt:12,lumen:1055},
+   {index:5,name:"LED Philips 15W. lumen: 1300",watt:15,lumen:1300},
+   {index:6,name:"LED Osram 10W. lumen: 900",watt:10,lumen:900},
+   {index:7,name:"LED Osram 20W. lumen: 1800",watt:20,lumen:1800},
+   {index:8,name:"Downlight LED 12W. lumen: 1000",watt:12,lumen:1000},
+   {index:9,name:"Downlight LED 18W. lumen: 1500",watt:18,lumen:1500},
+   {index:10,name:"Lampu TL 36W. lumen: 3350",watt:36,lumen:3350},
+   {index:11,name:"Lampu TL 58W. lumen: 4000",watt:58,lumen:4000},
+   {index:12,name:"Floodlight LED 30W. lumen: 2700",watt:30,lumen:2700},
+   {index:13,name:"Floodlight LED 50W. lumen: 4500",watt:50,lumen:4500},
+   {index:14,name:"Floodlight LED 70W. lumen: 6300",watt:70,lumen:6300},
+   {index:15,name:"Floodlight LED 100W. lumen: 9000",watt:100,lumen:9000},
+   {index:16,name:"Spotlight LED 5W. lumen: 400",watt:5,lumen:400},
+   {index:17,name:"Spotlight LED 10W. lumen: 900",watt:10,lumen:900}
+  ];
+  
 
+  // ---------- UI refs ----------
+  const kategoriEl = document.getElementById('kategori');
+  const ruanganEl = document.getElementById('ruangan');
+  const lampSelect = document.getElementById('lampSelect');
+  const btnMode1 = document.getElementById('btnMode1');
+  const btnMode2 = document.getElementById('btnMode2');
+  const mode1 = document.getElementById('mode1');
+  const mode2 = document.getElementById('mode2');
+  const toggleDark = document.getElementById('toggleDark');
+  const yearEl = document.getElementById('year');
 
-// ===== DROPDOWN =====
-const kategoriEl=document.getElementById("kategori");
-const ruanganEl=document.getElementById("ruangan");
-const lampSelect=document.getElementById("lampSelect");
+  // ---------- Populate dropdowns ----------
+  (function initDropdowns(){
+    const kategoriList = [...new Set(ROOMS.map(r=>r.kategori))];
+    kategoriEl.innerHTML = '<option value="">-- Pilih Kategori --</option>';
+    kategoriList.forEach(k=>{
+      const o = document.createElement('option'); o.value = k; o.textContent = k; kategoriEl.appendChild(o);
+    });
+    ruanganEl.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
+    lampSelect.innerHTML = '';
+    LAMPS.forEach(l=>{
+      const o = document.createElement('option');
+      o.value = l.id;
+      o.textContent = `${l.name} — ${l.watt}W | ${l.lumen} lm`;
+      lampSelect.appendChild(o);
+    });
+  })();
 
-const kategoriList=[...new Set(ROOMS.map(r=>r.kategori))];
-kategoriList.forEach(k=>{
-  const opt=document.createElement("option");
-  opt.value=k; opt.textContent=k;
-  kategoriEl.appendChild(opt);
-});
-kategoriEl.addEventListener("change",()=>{
-  ruanganEl.innerHTML='<option value="">-- Pilih Ruangan --</option>';
-  ROOMS.filter(r=>r.kategori==kategoriEl.value).forEach(r=>{
-    const o=document.createElement("option");
-    o.value=r.key; o.textContent=r.name;
-    ruanganEl.appendChild(o);
+  kategoriEl.addEventListener('change', ()=>{
+    const cat = kategoriEl.value;
+    ruanganEl.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
+    ROOMS.filter(r=>r.kategori === cat).forEach(r=>{
+      const o = document.createElement('option'); o.value = r.key; o.textContent = `${r.name} — lux:${r.lux}`; ruanganEl.appendChild(o);
+    });
   });
-});
-LAMPS.forEach(l=>{
-  const o=document.createElement("option");
-  o.value=l.index;
-  o.textContent=l.name+` [${l.watt}W | ${l.lumen}lm]`;
-  lampSelect.appendChild(o);
-});
 
-// ===== MODE TOGGLE =====
-const mode1=document.getElementById("mode1");
-const mode2=document.getElementById("mode2");
-const btn1=document.getElementById("btnMode1");
-const btn2=document.getElementById("btnMode2");
-btn1.onclick=()=>{mode1.classList.remove('hidden');mode2.classList.add('hidden');btn1.classList.add('active');btn2.classList.remove('active');};
-btn2.onclick=()=>{mode2.classList.remove('hidden');mode1.classList.add('hidden');btn2.classList.add('active');btn1.classList.remove('active');};
+  // ---------- Theme toggle ----------
+  toggleDark.addEventListener('click', ()=>{
+    document.body.classList.toggle('dark');
+    toggleDark.textContent = document.body.classList.contains('dark') ? '☀' : '🌙';
+  });
 
-// ===== MODE 1 =====
-document.getElementById("calcMode1").onclick=()=>{
-  const rKey=ruanganEl.value;
-  const lIdx=parseInt(lampSelect.value);
-  const len=parseFloat(document.getElementById("length").value);
-  const wid=parseFloat(document.getElementById("width").value);
-  const eta=parseFloat(document.getElementById("eta").value);
-  const warn=document.getElementById("warning1");
-  const result=document.getElementById("resultMode1");
-  const svg=document.getElementById("lampLayout");
-  if(!rKey||isNaN(lIdx)||!len||!wid){alert("Lengkapi semua input!");return;}
-  const ruangan=ROOMS.find(r=>r.key==rKey);
-  const lamp=LAMPS.find(l=>l.index==lIdx);
-  const area=len*wid;
-  const totalLum=ruangan.lux*area/eta;
-  const lampCount=Math.ceil(totalLum/lamp.lumen);
-  const totalWatt=lamp.watt*lampCount;
-  const arus=totalWatt/220;
-  const cols=Math.ceil(Math.sqrt(lampCount)),rows=Math.ceil(lampCount/cols);
-  svg.innerHTML="";
-  for(let i=0;i<lampCount;i++){
-    const r=Math.floor(i/cols),c=i%cols;
-    const cx=((c+1)/(cols+1))*600;
-    const cy=((r+1)/(rows+1))*400;
-    const circle=document.createElementNS("http://www.w3.org/2000/svg","circle");
-    circle.setAttribute("cx",cx);
-    circle.setAttribute("cy",cy);
-    circle.setAttribute("r",10);
-    circle.setAttribute("fill",i%2==0?"#00aaff":"#0077cc");
-    svg.appendChild(circle);
+  // ---------- Mode toggle ----------
+  btnMode1.addEventListener('click', ()=>{ mode1.style.display='block'; mode2.style.display='none'; btnMode1.classList.add('primary'); btnMode2.classList.remove('primary'); btnMode2.classList.add('ghost'); btnMode1.classList.remove('ghost');});
+  btnMode2.addEventListener('click', ()=>{ mode2.style.display='block'; mode1.style.display='none'; btnMode2.classList.add('primary'); btnMode1.classList.remove('primary'); btnMode1.classList.add('ghost'); btnMode2.classList.remove('ghost');});
+
+  // ---------- Helpers ----------
+  function toNum(v, fallback=0){ const n = parseFloat(v); return isNaN(n)?fallback:n; }
+  function chooseMCBRecommendation(currentA){
+    // returns recommended MCB (A), conservative rounding: next standard size
+    const sizes = [6,10,13,16,20,25,32,40,50,63,80,100];
+    for(const s of sizes) if(currentA <= s) return s;
+    return 125;
   }
-  warn.classList.add("hidden");
-  if(lampCount%cols!==0){warn.textContent="⚠ Jumlah lampu tidak merata, pertimbangkan watt lain.";warn.classList.remove("hidden");}
-  result.textContent=`Ruangan: ${ruangan.name}\nLuas: ${area.toFixed(2)} m²\nLux: ${ruangan.lux}\nLampu: ${lamp.name}\nJumlah: ${lampCount}\nTotal Watt: ${totalWatt}W\nArus: ${arus.toFixed(2)}A`;
-};
-document.getElementById("reset1").onclick=()=>{document.querySelectorAll("#mode1 input, #mode1 select").forEach(i=>i.value="");document.getElementById("lampLayout").innerHTML="";document.getElementById("resultMode1").textContent="";};
+  yearEl.textContent = new Date().getFullYear();
 
-<script>
-// ===== MODE 2 (FINAL VERSION) =====
-const groupsContainer = document.getElementById('groupsContainer');
-const calcMode2Btn = document.getElementById('calcMode2');
-const resultTableBody = document.querySelector('#resultTable tbody');
-const resultMode2 = document.getElementById('resultMode2');
+  // ---------- MODE 1: Layout & calc ----------
+  document.getElementById('calcMode1').addEventListener('click', ()=>{
+    const rKey = ruanganEl.value;
+    const lampIdx = lampSelect.value;
+    const len = toNum(document.getElementById('length').value, 0);
+    const wid = toNum(document.getElementById('width').value, 0);
+    const eta = toNum(document.getElementById('eta').value, 0.8);
+    const warnEl = document.getElementById('warning1');
+    const resEl = document.getElementById('resultMode1');
+    const svg = document.getElementById('lampLayout');
+    warnEl.style.display='none';
+    resEl.textContent='';
+    svg.innerHTML='';
 
-// === Tambahkan kontrol sistem fase ===
-const sysSelector = document.createElement('div');
-sysSelector.style.marginBottom = "15px";
-sysSelector.innerHTML = `
-  <label><b>Sistem Listrik:</b></label>
-  <select id="sistemListrik" style="padding:8px;border-radius:8px;border:1px solid #ccc;margin-left:10px">
-    <option value="1">1 Fase (220V)</option>
-    <option value="3">3 Fase (380V)</option>
-  </select>
-  <button id="addGroup" class="btn outline" style="margin-left:12px;">➕ Tambah Grup</button>
-  <button id="addExample" class="btn outline">✨ Tambah Grup Contoh</button>
-`;
-groupsContainer.parentNode.insertBefore(sysSelector, groupsContainer);
+    if(!rKey || lampIdx==='' || len<=0 || wid<=0){
+      alert('Lengkapi input: pilih kategori/ruangan, lampu, panjang & lebar.');
+      return;
+    }
+    const room = ROOMS.find(r=>r.key===rKey);
+    const lamp = LAMPS.find(l=>String(l.id)===String(lampIdx));
+    const area = len*wid;
+    const totalLum = (room.lux * area) / (eta || 1);
+    const lampCount = Math.max(1, Math.ceil(totalLum / lamp.lumen));
+    const totalWatt = lampCount * lamp.watt;
+    const currentA = totalWatt / 220;
+    // draw simple grid
+    const cols = Math.ceil(Math.sqrt(lampCount));
+    const rows = Math.ceil(lampCount / cols);
+    const W=600, H=360;
+    for(let i=0;i<lampCount;i++){
+      const r = Math.floor(i/cols), c = i%cols;
+      const cx = ((c+1)/(cols+1))*W;
+      const cy = ((r+1)/(rows+1))*H;
+      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx', cx);
+      circle.setAttribute('cy', cy);
+      circle.setAttribute('r', 10);
+      circle.setAttribute('fill', i%2===0 ? '#00aaff' : '#0077cc');
+      svg.appendChild(circle);
+    }
+    if(lampCount % cols !== 0) { warnEl.textContent = '⚠ Jumlah lampu tidak merata pada grid, pertimbangkan opsi lampu lain.'; warnEl.style.display='block'; }
 
-let grpIdCounter = 0;
-
-function recommendMCB(amp) {
-  const sizes = [2,4,6,10,16,20,25,32,40,50,63,80,100];
-  for (const s of sizes) if (amp <= s * 0.8) return s;
-  return sizes[sizes.length - 1];
-}
-
-function makeLampOptionsHTML() {
-  return LAMPS.map(l => `<option value="${l.index}">${l.name} [${l.watt}W]</option>`).join('');
-}
-
-function createGroupCard() {
-  grpIdCounter++;
-  const id = grpIdCounter;
-  const card = document.createElement('div');
-  card.className = 'card mode2-group';
-  card.dataset.gid = id;
-  card.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <strong>Grup ${id}</strong>
-      <div style="display:flex;gap:8px">
-        <button class="btn outline add-lamp">➕ Lampu</button>
-        <button class="btn outline add-kkk">➕ KKK (VA)</button>
-        <button class="btn outline remove-group">🗑 Hapus Grup</button>
-      </div>
-    </div>
-
-    <div class="grid-2" style="margin-top:10px">
-      <div>
-        <label>Power Factor (PF)</label>
-        <input type="number" class="g_pf" step="0.01" min="0.5" max="1" value="0.95">
-      </div>
-      <div>
-        <label>Derating / Margin (%)</label>
-        <input type="number" class="g_derate" min="0" max="50" step="1" value="10">
-      </div>
-    </div>
-
-    <div style="margin-top:12px">
-      <div class="lamp-rows"></div>
-      <div class="kkk-rows" style="margin-top:8px"></div>
-    </div>
-
-    <div style="margin-top:10px" class="tiny">Hasil Grup: <span class="group-summary">-</span></div>
-  `;
-  groupsContainer.appendChild(card);
-
-  card.querySelector('.add-lamp').addEventListener('click', ()=> addLampRow(card));
-  card.querySelector('.add-kkk').addEventListener('click', ()=> addKKKRow(card));
-  card.querySelector('.remove-group').addEventListener('click', ()=> { if(confirm('Hapus grup ini?')) card.remove(); });
-  return card;
-}
-
-function addLampRow(card, defaultQty=1, defaultLampIndex=0) {
-  const rows = card.querySelector('.lamp-rows');
-  const row = document.createElement('div');
-  row.className = 'lamp-row';
-  row.style.cssText = 'display:flex;gap:8px;margin-top:8px';
-  row.innerHTML = `
-    <div style="flex:0 0 120px">
-      <label style="font-weight:600;font-size:0.85rem;margin-bottom:4px;display:block">Qty</label>
-      <input type="number" class="lamp-qty" value="${defaultQty}" min="1" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd">
-    </div>
-    <div style="flex:1">
-      <label style="font-weight:600;font-size:0.85rem;margin-bottom:4px;display:block">Pilih Lampu</label>
-      <select class="lamp-type" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd">
-        ${makeLampOptionsHTML()}
-      </select>
-    </div>
-    <div style="flex:0 0 80px;display:flex;align-items:end;justify-content:flex-end">
-      <button class="btn outline remove-lamp">Hapus</button>
-    </div>
-  `;
-  rows.appendChild(row);
-  const sel = row.querySelector('.lamp-type');
-  sel.value = defaultLampIndex;
-  row.querySelector('.remove-lamp').addEventListener('click', ()=> row.remove());
-  return row;
-}
-
-function addKKKRow(card, defaultLabel='Peralatan', defaultVA=100) {
-  const rows = card.querySelector('.kkk-rows');
-  const row = document.createElement('div');
-  row.className = 'kkk-row';
-  row.style.cssText = 'display:flex;gap:8px;margin-top:8px';
-  row.innerHTML = `
-    <div style="flex:1">
-      <label style="font-weight:600;font-size:0.85rem;margin-bottom:4px;display:block">Nama KKK</label>
-      <input type="text" class="kkk-label" value="${defaultLabel}" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd">
-    </div>
-    <div style="flex:0 0 140px">
-      <label style="font-weight:600;font-size:0.85rem;margin-bottom:4px;display:block">VA</label>
-      <input type="number" class="kkk-va" value="${defaultVA}" min="0" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd">
-    </div>
-    <div style="flex:0 0 80px;display:flex;align-items:end;justify-content:flex-end">
-      <button class="btn outline remove-kkk">Hapus</button>
-    </div>
-  `;
-  rows.appendChild(row);
-  row.querySelector('.remove-kkk').addEventListener('click', ()=> row.remove());
-  return row;
-}
-
-// Tombol Tambah Grup
-document.getElementById('addGroup').addEventListener('click', ()=>{
-  const card = createGroupCard();
-  addLampRow(card,1,0);
-  addKKKRow(card,'Contoh KKK',100);
-});
-
-// Tombol Tambah Grup Contoh
-document.getElementById('addExample').addEventListener('click', ()=>{
-  const card = createGroupCard();
-  addLampRow(card, 2, Math.floor(Math.random()*LAMPS.length));
-  addLampRow(card, 1, Math.floor(Math.random()*LAMPS.length));
-  addKKKRow(card, 'Pompa Air', 300 + Math.floor(Math.random()*200));
-  alert('Grup contoh telah ditambahkan ✨');
-});
-
-// Tombol Hitung
-calcMode2Btn.addEventListener('click', ()=>{
-  resultTableBody.innerHTML = '';
-  resultMode2.textContent = '';
-
-  const sistem = document.getElementById('sistemListrik').value;
-  const V = sistem === '3' ? 380 : 220;
-  const groupCards = Array.from(groupsContainer.querySelectorAll('.mode2-group'));
-  if (groupCards.length === 0) return alert('Tambahkan minimal satu grup.');
-
-  let grandW=0, grandVA=0, grandA=0;
-
-  groupCards.forEach((card, i)=>{
-    const pf = parseFloat(card.querySelector('.g_pf').value)||0.95;
-    const der = parseFloat(card.querySelector('.g_derate').value)||0;
-
-    const lampRows = Array.from(card.querySelectorAll('.lamp-row'));
-    let wLamp=0, vaLamp=0, nLamp=0;
-    lampRows.forEach(l=>{
-      const qty = parseFloat(l.querySelector('.lamp-qty').value)||0;
-      const idx = parseInt(l.querySelector('.lamp-type').value);
-      const lamp = LAMPS.find(x=>x.index===idx);
-      if(!lamp) return;
-      nLamp += qty;
-      const w = lamp.watt * qty;
-      wLamp += w;
-      vaLamp += w / pf;
-    });
-
-    const kkkRows = Array.from(card.querySelectorAll('.kkk-row'));
-    let vaKKK = 0;
-    kkkRows.forEach(k=>{
-      const v = parseFloat(k.querySelector('.kkk-va').value)||0;
-      vaKKK += v;
-    });
-
-    const totalVA = (vaLamp + vaKKK) * (1+der/100);
-    const I = sistem === '3' ? totalVA / (Math.sqrt(3)*V) : totalVA / V;
-    const mcb = recommendMCB(I);
-
-    grandW += wLamp;
-    grandVA += totalVA;
-    grandA += I;
-
-    card.querySelector('.group-summary').textContent =
-      `Lampu: ${nLamp}, Watt: ${wLamp.toFixed(1)}, VA KKK: ${vaKKK}, Total VA: ${totalVA.toFixed(1)}, Arus: ${I.toFixed(2)} A, MCB: ${mcb}A`;
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>Grup ${i+1}</td>
-      <td>${nLamp}</td>
-      <td>${vaKKK}</td>
-      <td>${wLamp.toFixed(1)}</td>
-      <td>${vaLamp.toFixed(1)}</td>
-      <td>${totalVA.toFixed(1)}</td>
-      <td>${I.toFixed(2)}</td>
-      <td>${mcb}A</td>
-    `;
-    resultTableBody.appendChild(tr);
+    resEl.textContent =
+`Ruangan: ${room.name} (lux: ${room.lux})
+Luas: ${area.toFixed(2)} m²
+Lampu: ${lamp.name} — ${lamp.watt}W | ${lamp.lumen} lm
+Jumlah Lampu (estimasi): ${lampCount}
+Total Watt: ${totalWatt} W
+Arus (estimasi): ${currentA.toFixed(2)} A
+Rekomendasi MCB (perkiraan): ${chooseMCBRecommendation(currentA)} A`;
   });
 
-  const footer = document.createElement('tr');
-  footer.innerHTML = `<th colspan="3">TOTAL</th>
-    <th>${grandW.toFixed(1)} W</th>
-    <th>-</th>
-    <th>${grandVA.toFixed(1)} VA</th>
-    <th>${grandA.toFixed(2)} A</th>
-    <th>${recommendMCB(grandA)}A</th>`;
-  resultTableBody.appendChild(footer);
-
-  resultMode2.innerHTML = `
-    Sistem: ${sistem==='3'?'3 Fase (380V)':'1 Fase (220V)'}<br>
-    Total Watt: ${grandW.toFixed(1)} W<br>
-    Total VA: ${grandVA.toFixed(1)} VA<br>
-    Total Arus: ${grandA.toFixed(2)} A<br>
-    Rekomendasi MCB Utama: ${recommendMCB(grandA)} A
-  `;
-});
-</script>
-
-// ===== MODE 2 =====
-const groupsContainer=document.getElementById("groupsContainer");
-let groupCount=0;
-document.getElementById("addGroup").onclick=()=>{
-  groupCount++;
-  const div=document.createElement("div");
-  div.className="card";
-  div.innerHTML=`<strong>Grup ${groupCount}</strong>
-  <div class="grid-2">
-  <div><label>Jumlah Lampu</label><input type="number" class="jumlah" value="1"></div>
-  <div><label>Pilih Lampu</label><select class="lamp"></select></div>
-  <div><label>Efisiensi η</label><input type="number" class="eta" value="0.8" step="0.01"></div>
-  <div><button class="btn outline remove">❌ Hapus</button></div></div>`;
-  const sel=div.querySelector(".lamp");
-  LAMPS.forEach(l=>{const o=document.createElement("option");o.value=l.index;o.textContent=l.name;sel.appendChild(o);});
-  div.querySelector(".remove").onclick=()=>div.remove();
-  groupsContainer.appendChild(div);
-};
-
-document.getElementById("calcMode2").onclick=()=>{
-  const rows=[];
-  let totalW=0,totalVA=0,totalA=0;
-  groupsContainer.querySelectorAll(".card").forEach((grp,i)=>{
-    const jml=parseFloat(grp.querySelector(".jumlah").value);
-    const lamp=LAMPS.find(l=>l.index==parseInt(grp.querySelector(".lamp").value));
-    const eta=parseFloat(grp.querySelector(".eta").value);
-    const watt=jml*lamp.watt;
-    const VA=watt/eta;
-    const A=watt/220;
-    totalW+=watt; totalVA+=VA; totalA+=A;
-    const mcb=A<=6?6:A<=10?10:A<=16?16:A<=20?20:A<=25?25:32;
-    rows.push(<tr><td>Grup ${i+1}</td><td>${jml}</td><td>${lamp.name}</td><td>${watt}</td><td>${VA.toFixed(2)}</td><td>${A.toFixed(2)}</td><td>${mcb}A</td></tr>);
+  document.getElementById('reset1').addEventListener('click', ()=>{
+    document.querySelectorAll('#mode1 input, #mode1 select').forEach(i=>{ if(i.tagName === 'SELECT') i.selectedIndex = 0; else i.value=''; });
+    document.getElementById('lampLayout').innerHTML='';
+    document.getElementById('resultMode1').textContent='';
+    document.getElementById('warning1').style.display='none';
   });
-  document.querySelector("#resultTable tbody").innerHTML=rows.join("")+<tr><th colspan=3>Total</th><th>${totalW}</th><th>${totalVA.toFixed(2)}</th><th>${totalA.toFixed(2)}</th><th>-</th></tr>;
-  document.getElementById("resultMode2").textContent=Total Daya: ${totalW}W | Total Arus: ${totalA.toFixed(2)}A | MCB Utama: ${totalA<=6?6:totalA<=10?10:totalA<=16?16:totalA<=20?20:totalA<=25?25:32}A;
-};
 
-document.getElementById("year").textContent=new Date().getFullYear();
-</script>
+  // Prepare for Mode 2 PART (next script fills behavior)
+  </script>
+
+  <!-- ====== PART 2: MODE 2 implementation (groups, lamp + KKK rows, calculations) ====== -->
+  <script>
+  (function(){
+    const groupsContainer = document.getElementById('groupsContainer');
+    const addGroupBtn = document.getElementById('addGroup');
+    const clearGroupsBtn = document.getElementById('clearGroups');
+    const calcMode2Btn = document.getElementById('calcMode2');
+    const resultMode2 = document.getElementById('resultMode2');
+    const tbody = document.querySelector('#resultTable tbody');
+    const tfoot = document.querySelector('#resultTable tfoot');
+    const mainSupplySel = document.getElementById('mainSupply');
+
+    let groupIdCounter = 0;
+
+    function createGroupCard(){
+      groupIdCounter++;
+      const gid = groupIdCounter;
+      const card = document.createElement('div');
+      card.className = 'card group-card';
+      card.dataset.gid = gid;
+
+      card.innerHTML = `
+        <div class="flex-between" style="margin-bottom:8px;gap:8px">
+          <strong>Grup ${gid}</strong>
+          <div style="display:flex;gap:8px">
+            <select class="supplyType" title="Supply per grup">
+              <option value="1p">1P — 220V</option>
+              <option value="3p">3P — 380V</option>
+            </select>
+            <button class="btn ghost btn-add-lamp small-btn">➕ Tambah Lampu</button>
+            <button class="btn ghost btn-add-kkk small-btn">➕ Tambah KKK</button>
+            <button class="btn ghost btn-remove small-btn">❌ Hapus Grup</button>
+          </div>
+        </div>
+        <div class="rows" style="display:flex;flex-direction:column;gap:8px"></div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div class="small">Total Lampu: <span class="totalLamp">0</span></div>
+          <div class="small">Total Watt Lampu: <span class="totalWattLamp">0</span> W</div>
+          <div class="small">Total VA KKK: <span class="totalVAkkk">0</span> VA</div>
+          <div class="small">Total VA Grup: <span class="totalVAgroup">0</span> VA</div>
+          <div class="small">Arus Grup: <span class="totalAgroup">0</span> A</div>
+          <div class="small">Rek. MCB: <span class="recMCB">-</span></div>
+        </div>
+      `;
+      // add one default lamp row to start
+      groupsContainer.prepend(card);
+      addLampRow(card);
+      return card;
+    }
+
+    function addLampRow(groupCard){
+      const rows = groupCard.querySelector('.rows');
+      const idx = rows.children.length + 1;
+      const row = document.createElement('div');
+      row.className = 'row row-lamp';
+      row.style.gap='8px';
+      row.innerHTML = `
+        <div style="flex:1;min-width:160px">
+          <label style="margin-bottom:4px">Lampu #${idx}</label>
+          <select class="lampSel"></select>
+        </div>
+        <div style="width:120px">
+          <label style="margin-bottom:4px">Jumlah</label>
+          <input type="number" class="lampQty" min="0" value="1">
+        </div>
+        <div style="width:120px">
+          <label style="margin-bottom:4px">Efisiensi η</label>
+          <input type="number" class="lampEta" step="0.01" min="0.1" max="1" value="0.8">
+        </div>
+        <div style="align-self:end">
+          <button class="btn ghost btn-remove-row small-btn">Hapus</button>
+        </div>
+      `;
+      // populate lamps
+      const sel = row.querySelector('.lampSel');
+      LAMPS.forEach(l=>{ const o = document.createElement('option'); o.value = l.id; o.textContent = `${l.name} — ${l.watt}W`; sel.appendChild(o); });
+      rows.appendChild(row);
+      attachRowListeners(row, groupCard);
+      computeGroup(groupCard);
+    }
+
+    function addKKKRow(groupCard){
+      const rows = groupCard.querySelector('.rows');
+      const idx = rows.children.length + 1;
+      const row = document.createElement('div');
+      row.className = 'row row-kkk';
+      row.style.gap='8px';
+      row.innerHTML = `
+        <div style="flex:1;min-width:160px">
+          <label style="margin-bottom:4px">KKK #${idx} (Peralatan)</label>
+          <input type="text" class="kkkName" placeholder="AC / Kulkas / TV">
+        </div>
+        <div style="width:140px">
+          <label style="margin-bottom:4px">Daya (VA)</label>
+          <input type="number" class="kkkVA" min="0" value="200">
+        </div>
+        <div style="width:120px;align-self:end">
+          <button class="btn ghost btn-remove-row small-btn">Hapus</button>
+        </div>
+      `;
+      rows.appendChild(row);
+      attachRowListeners(row, groupCard);
+      computeGroup(groupCard);
+    }
+
+    function attachRowListeners(row, groupCard){
+      row.querySelectorAll('input,select').forEach(el=>{
+        el.addEventListener('input', ()=> computeGroup(groupCard));
+      });
+      const del = row.querySelector('.btn-remove-row');
+      if(del) del.addEventListener('click', ()=>{ row.remove(); computeGroup(groupCard); });
+    }
+
+    function computeGroup(groupCard){
+      // compute totals per group: total lamp watt, total VA KKK, total VA group, arus (A) depending on supply (group/main)
+      const rows = groupCard.querySelector('.rows').children;
+      let totalLampQty = 0;
+      let totalWattLamp = 0;
+      let totalVAkkk = 0;
+      for(const r of rows){
+        if(r.classList.contains('row-lamp')){
+          const qty = toNum(r.querySelector('.lampQty').value, 0);
+          const lampId = r.querySelector('.lampSel').value;
+          const eta = Math.max(0.01, toNum(r.querySelector('.lampEta').value, 0.8));
+          const lamp = LAMPS.find(x=>String(x.id)===String(lampId));
+          const watt = qty * (lamp ? lamp.watt : 0);
+          const va = watt / eta; // lamp VA adjusted by efficiency
+          totalLampQty += qty;
+          totalWattLamp += watt;
+          // For table and group VA sum we'll add va separately
+        } else if(r.classList.contains('row-kkk')){
+          const va = toNum(r.querySelector('.kkkVA').value, 0);
+          totalVAkkk += va;
+        }
+      }
+      // total VA from lamps (considering eta)
+      let totalVAfromLamps = 0;
+      for(const r of rows){
+        if(r.classList.contains('row-lamp')){
+          const qty = toNum(r.querySelector('.lampQty').value, 0);
+          const lampId = r.querySelector('.lampSel').value;
+          const eta = Math.max(0.01, toNum(r.querySelector('.lampEta').value, 0.8));
+          const lamp = LAMPS.find(x=>String(x.id)===String(lampId));
+          const watt = qty * (lamp ? lamp.watt : 0);
+          const va = watt / eta;
+          totalVAfromLamps += va;
+        }
+      }
+
+      const totalVAgroup = totalVAfromLamps + totalVAkkk;
+      // determine supply for group or fallback to main supply? We'll compute group current based on group supply type selection.
+      const supplyType = groupCard.querySelector('.supplyType').value; // '1p' or '3p'
+      let currentA = 0;
+      if(supplyType === '1p'){
+        currentA = totalVAgroup / 220;
+      } else {
+        // 3 phase balanced: I = VA / (√3 * Vline) with Vline ~ 380
+        currentA = totalVAgroup / (Math.sqrt(3) * 380);
+      }
+      const recMCB = chooseMCBRecommendation(currentA);
+
+      // update UI
+      groupCard.querySelector('.totalLamp').textContent = totalLampQty;
+      groupCard.querySelector('.totalWattLamp').textContent = totalWattLamp.toFixed(0);
+      groupCard.querySelector('.totalVAkkk').textContent = totalVAkkk.toFixed(0);
+      groupCard.querySelector('.totalVAgroup').textContent = totalVAgroup.toFixed(2);
+      groupCard.querySelector('.totalAgroup').textContent = currentA.toFixed(2);
+      groupCard.querySelector('.recMCB').textContent = `${recMCB} A`;
+      // store computed summary on card for later aggregation
+      groupCard._summary = {
+        totalLampQty,
+        totalWattLamp,
+        totalVAkkk,
+        totalVAgroup,
+        currentA,
+        recMCB,
+        supplyType
+      };
+    }
+
+    // Event: Add group
+    addGroupBtn.addEventListener('click', ()=>{
+      const g = createGroupCard();
+      // button listeners inside card
+      g.querySelector('.btn-add-lamp').addEventListener('click', ()=> addLampRow(g));
+      g.querySelector('.btn-add-kkk').addEventListener('click', ()=> addKKKRow(g));
+      g.querySelector('.btn-remove').addEventListener('click', ()=>{ if(confirm('Hapus grup ini?')) { g.remove(); computeAll(); }});
+      // supply type change recompute
+      g.querySelector('.supplyType').addEventListener('change', ()=> computeGroup(g));
+      // initial compute executed in createGroupCard via addLampRow -> computeGroup
+      computeAll();
+    });
+
+    clearGroupsBtn.addEventListener('click', ()=>{
+      if(confirm('Hapus semua grup?')){
+        groupsContainer.innerHTML = '';
+        groupIdCounter = 0;
+        computeAll();
+      }
+    });
+
+    function computeAll(){
+      const groups = Array.from(groupsContainer.querySelectorAll('.group-card'));
+      let totalWattAll = 0;
+      let totalVAAll = 0;
+      let totalAAll = 0;
+      const mainSupply = mainSupplySel.value; // main supply selection affects how main current is computed
+      // compute each group to ensure summary present
+      groups.forEach(g=>{
+        computeGroup(g);
+      });
+      // build result table
+      const rowsHtml = [];
+      groups.forEach((g, idx)=>{
+        const s = g._summary || {};
+        const lampsDetail = [];
+        // produce detail string: list lamp types and qty
+        const lampRows = Array.from(g.querySelectorAll('.row-lamp'));
+        lampRows.forEach(r=>{
+          const lampId = r.querySelector('.lampSel').value;
+          const lamp = LAMPS.find(x=>String(x.id)===String(lampId));
+          const qty = toNum(r.querySelector('.lampQty').value,0);
+          if(qty>0) lampsDetail.push(`${qty}× ${lamp ? lamp.name : 'unknown'}`);
+        });
+        const kkkRows = Array.from(g.querySelectorAll('.row-kkk'));
+        kkkRows.forEach(r=>{
+          const name = r.querySelector('.kkkName').value || 'Peralatan';
+          const va = toNum(r.querySelector('.kkkVA').value,0);
+          if(va>0) lampsDetail.push(`${name} ${va}VA`);
+        });
+        rowsHtml.push(`<tr>
+          <td>Grup ${g.dataset.gid}</td>
+          <td>${s.totalLampQty ?? 0}</td>
+          <td style="text-align:left;padding:8px">${(lampsDetail.join('<br>') || '-')}</td>
+          <td>${(s.totalWattLamp ?? 0).toFixed(0)}</td>
+          <td>${(s.totalVAgroup ?? 0).toFixed(2)}</td>
+          <td>${(s.currentA ?? 0).toFixed(2)}</td>
+          <td>${(s.recMCB ?? '-') } A</td>
+        </tr>`);
+        totalWattAll += (s.totalWattLamp ?? 0);
+        totalVAAll += (s.totalVAgroup ?? 0);
+        totalAAll += (s.currentA ?? 0);
+      });
+
+      // main MCB calculation depends on mainSupply selection
+      // if main supply is 1p, total current = totalVAAll / 220
+      // if main supply is 3p, total current = totalVAAll / (√3 * 380)
+      let mainI=0;
+      if(mainSupply === '1p'){
+        mainI = totalVAAll / 220;
+      } else {
+        mainI = totalVAAll / (Math.sqrt(3) * 380);
+      }
+      const mainMCB = chooseMCBRecommendation(mainI);
+
+      tbody.innerHTML = rowsHtml.join('') || '<tr><td colspan="7">Belum ada grup</td></tr>';
+      tfoot.innerHTML = `<tr>
+        <th colspan="3">Total</th>
+        <th>${totalWattAll.toFixed(0)}</th>
+        <th>${totalVAAll.toFixed(2)}</th>
+        <th>${totalAAll.toFixed(2)}</th>
+        <th>MCB Utama: ${mainMCB} A</th>
+      </tr>`;
+
+      resultMode2.textContent = `Total Daya (W): ${totalWattAll.toFixed(0)} W  |  Total VA: ${totalVAAll.toFixed(2)} VA  |  Total Arus (sum grup): ${totalAAll.toFixed(2)} A  |  MCB Utama (${mainSupply === '1p' ? '1P 220V' : '3P 380V'}): ${mainMCB} A`;
+    }
+
+    calcMode2Btn.addEventListener('click', ()=>{
+      computeAll();
+      // scroll to table
+      document.querySelector('#resultTable').scrollIntoView({behavior:'smooth'});
+    });
+
+    // Auto-add one group for convenience
+    addGroupBtn.click();
+
+    // Utility reused from previous script
+    function toNum(v, fallback=0){ const n=parseFloat(v); return isNaN(n)?fallback:n; }
+    function chooseMCBRecommendation(currentA){
+      const sizes = [6,10,13,16,20,25,32,40,50,63,80,100,125,160];
+      for(const s of sizes) if(currentA <= s) return s;
+      return 200;
+    }
+
+    // Recompute whenever main supply changed
+    mainSupplySel.addEventListener('change', ()=> computeAll());
+
+    // Make groups reorder-safe (not required but helpful)
+    // (No external libs — simple)
+  })();
+  </script>
 </body>
 </html>
