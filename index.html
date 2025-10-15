@@ -605,3 +605,44 @@ calcMode2Btn.addEventListener('click', ()=>{
 });
 </script>
 
+// ===== MODE 2 =====
+const groupsContainer=document.getElementById("groupsContainer");
+let groupCount=0;
+document.getElementById("addGroup").onclick=()=>{
+  groupCount++;
+  const div=document.createElement("div");
+  div.className="card";
+  div.innerHTML=`<strong>Grup ${groupCount}</strong>
+  <div class="grid-2">
+  <div><label>Jumlah Lampu</label><input type="number" class="jumlah" value="1"></div>
+  <div><label>Pilih Lampu</label><select class="lamp"></select></div>
+  <div><label>Efisiensi η</label><input type="number" class="eta" value="0.8" step="0.01"></div>
+  <div><button class="btn outline remove">❌ Hapus</button></div></div>`;
+  const sel=div.querySelector(".lamp");
+  LAMPS.forEach(l=>{const o=document.createElement("option");o.value=l.index;o.textContent=l.name;sel.appendChild(o);});
+  div.querySelector(".remove").onclick=()=>div.remove();
+  groupsContainer.appendChild(div);
+};
+
+document.getElementById("calcMode2").onclick=()=>{
+  const rows=[];
+  let totalW=0,totalVA=0,totalA=0;
+  groupsContainer.querySelectorAll(".card").forEach((grp,i)=>{
+    const jml=parseFloat(grp.querySelector(".jumlah").value);
+    const lamp=LAMPS.find(l=>l.index==parseInt(grp.querySelector(".lamp").value));
+    const eta=parseFloat(grp.querySelector(".eta").value);
+    const watt=jml*lamp.watt;
+    const VA=watt/eta;
+    const A=watt/220;
+    totalW+=watt; totalVA+=VA; totalA+=A;
+    const mcb=A<=6?6:A<=10?10:A<=16?16:A<=20?20:A<=25?25:32;
+    rows.push(<tr><td>Grup ${i+1}</td><td>${jml}</td><td>${lamp.name}</td><td>${watt}</td><td>${VA.toFixed(2)}</td><td>${A.toFixed(2)}</td><td>${mcb}A</td></tr>);
+  });
+  document.querySelector("#resultTable tbody").innerHTML=rows.join("")+<tr><th colspan=3>Total</th><th>${totalW}</th><th>${totalVA.toFixed(2)}</th><th>${totalA.toFixed(2)}</th><th>-</th></tr>;
+  document.getElementById("resultMode2").textContent=Total Daya: ${totalW}W | Total Arus: ${totalA.toFixed(2)}A | MCB Utama: ${totalA<=6?6:totalA<=10?10:totalA<=16?16:totalA<=20?20:totalA<=25?25:32}A;
+};
+
+document.getElementById("year").textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
