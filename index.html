@@ -3,168 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Lighting Planner </title>
+<title>Smart Lighting Planner Premium</title>
 <style>
 :root {
-  --primary: #7c3aed;
-  --primary-dark: #5b21b6;
+  --primary: #00aaff;
+  --primary-dark: #0077cc;
   --bg-light: #f5f7fa;
-  --bg-dark: #181022;
+  --bg-dark: #1e1e2f;
   --text-light: #fff;
   --text-dark: #333;
   --card-light: #fff;
-  --card-dark: #231b33;
+  --card-dark: #2b2b3c;
   --border-light: #ccc;
-  --border-dark: #555;
+  --border-dark: #444;
 }
 
 body {
-  margin: 0;
+  margin: 0; padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--bg-light);
   color: var(--text-dark);
   transition: 0.4s;
 }
+
 body.dark {
   background: var(--bg-dark);
   color: var(--text-light);
 }
 
-/* HEADER */
 header {
   background: linear-gradient(90deg, var(--primary-dark), var(--primary));
   color: #fff;
   text-align: center;
   padding: 35px 15px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   position: relative;
 }
-header h1 { margin:0; font-size:2em; }
-header p { opacity:0.9; margin:6px 0 0; }
+
+header h1 {
+  font-size: 2em; margin: 0;
+}
+
+header p {
+  opacity: 0.9;
+}
+
 #toggleDark {
-  position:absolute; right:15px; top:15px;
-  background: rgba(255,255,255,0.15);
-  border:none; color:#fff;
-  padding:8px 15px; border-radius:10px;
-  cursor:pointer; font-weight:600; transition:0.3s;
+  position: absolute;
+  right: 15px; top: 15px;
+  background: rgba(255,255,255,0.2);
+  border: none; color: #fff;
+  padding: 8px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
 }
 #toggleDark:hover { background: rgba(255,255,255,0.3); }
 
-/* LAYOUT WRAPPER */
-.wrap { max-width:1100px; margin:25px auto; padding:0 20px; }
+.wrap {
+  max-width: 1100px; margin: 25px auto; padding: 0 20px;
+}
+
 .card {
   background: var(--card-light);
-  border-radius:15px;
-  padding:25px; margin-bottom:25px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.1);
-  transition:0.3s;
+  color: inherit;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  transition: 0.3s;
 }
-body.dark .card {
-  background: var(--card-dark);
-  box-shadow:0 4px 15px rgba(255,255,255,0.05);
-}
+body.dark .card { background: var(--card-dark); box-shadow: 0 4px 15px rgba(255,255,255,0.05); }
 
-/* BUTTONS */
 .btn {
-  border:none; padding:10px 20px;
-  border-radius:10px; cursor:pointer;
-  font-weight:600; margin:5px; transition:0.3s;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 5px;
+  transition: 0.3s;
 }
-.btn:hover { transform:translateY(-2px); }
+.btn:hover { transform: translateY(-2px); }
 .mode-btn {
   background: var(--primary-dark);
-  color:#fff;
+  color: #fff;
 }
 .mode-btn.active { background: var(--primary); }
-button.primary { background: var(--primary); color:#fff; }
+
+button.primary { background: var(--primary); color: #fff; }
 button.outline {
   background: transparent;
-  border:2px solid var(--primary);
+  border: 2px solid var(--primary);
   color: var(--primary);
 }
-body.dark button.outline {
-  border-color:#9d7df5; color:#c8a9ff;
-}
+body.dark button.outline { border-color: #00aaff; color: #00aaff; }
 
-/* GRID */
 .grid-2 {
-  display:grid;
+  display: grid;
   grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
+  gap: 20px;
 }
 
-label { display:block; margin-bottom:6px; font-weight:600; }
+label { display: block; margin-bottom: 6px; font-weight: 600; }
 input, select {
-  width:100%; padding:10px;
-  border:1px solid var(--border-light);
-  border-radius:10px;
-  font-size:1em;
+  width: 100%; padding: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  font-size: 1em;
 }
 body.dark input, body.dark select {
-  background:#2e2342;
-  color:#fff;
+  background: #333;
+  color: #fff;
   border-color: var(--border-dark);
 }
-
-/* RESULT BLOCK */
 .result-block {
-  margin-top:15px;
-  padding:15px;
-  border-radius:10px;
-  background:rgba(0,0,0,0.05);
-  white-space:pre-wrap;
-  font-family:monospace;
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.05);
+  white-space: pre-wrap;
+  font-family: monospace;
 }
-body.dark .result-block { background:rgba(255,255,255,0.05); }
+body.dark .result-block { background: rgba(255,255,255,0.05); }
 
-/* TABLE */
-table { width:100%; border-collapse:collapse; margin-top:15px; }
-table th, table td {
-  border:1px solid #ccc;
-  padding:8px;
-  text-align:center;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
 }
-body.dark table th, body.dark table td { border-color:#444; }
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+body.dark table th, body.dark table td {
+  border-color: #444;
+}
 table th {
   background: var(--primary);
-  color:#fff;
+  color: #fff;
 }
-
-/* SVG layout */
-svg {
-  width:100%; height:auto;
-  margin-top:15px;
-  border-radius:10px;
-  border:1px solid var(--primary);
+canvas, svg {
+  width: 100%; height: auto;
+  margin-top: 15px;
+  border-radius: 10px;
+  border: 1px solid var(--primary);
 }
+.hidden { display: none; }
 
-/* FOOTER */
 footer {
-  text-align:center;
-  padding:20px;
-  font-weight:600;
+  text-align: center;
+  padding: 20px;
+  font-weight: 600;
   background: rgba(0,0,0,0.05);
-  border-top:1px solid #ccc;
-  margin-top:30px;
+  border-top: 1px solid #ccc;
+  margin-top: 30px;
 }
-body.dark footer {
-  background: rgba(255,255,255,0.05);
-  border-top-color:#444;
-}
-footer small {
-  display:block;
-  opacity:0.6;
-  margin-top:5px;
-  font-size:0.9em;
-}
+body.dark footer { background: rgba(255,255,255,0.05); border-top-color: #444; }
 
-/* WARNINGS */
-.warning { color:#d00; font-weight:700; margin-top:10px; }
-body.dark .warning { color:#ff7c7c; }
+.warning { color: red; font-weight: 700; margin-top: 10px; }
+body.dark .warning { color: #ff8080; }
 
-/* RESPONSIVE */
 @media(max-width:600px){
-  header h1{font-size:1.5em;}
+  header h1{font-size:1.6em;}
   .btn{padding:8px 15px;}
   table{font-size:0.9em; overflow-x:auto; display:block;}
 }
@@ -173,14 +176,14 @@ body.dark .warning { color:#ff7c7c; }
 <body>
 <header>
   <h1>Smart Lighting Planner Premium</h1>
-  <p>Hitung Lampu, Layout, Watt &amp; MCB dengan Akurasi SNI</p>
+  <p>Hitung Lampu, Layout, Watt & MCB dengan Akurasi SNI</p>
   <button id="toggleDark">🌙</button>
 </header>
 
 <div class="wrap">
   <div class="card" style="text-align:center;">
-    <button class="btn mode-btn active" id="btnMode1">Lampu per titik</button>
-    <button class="btn mode-btn" id="btnMode2">KKK & lampu; MCB</button>
+    <button class="btn mode-btn active" id="btnMode1">Hitung— Lampu (per titik)</button>
+    <button class="btn mode-btn" id="btnMode2"> KKK & lampu - MCB</button>
   </div>
 
   <!-- MODE 1 -->
@@ -211,14 +214,14 @@ body.dark .warning { color:#ff7c7c; }
         <select id="lampSelect"></select>
       </div>
     </div>
-    <button class="btn primary" id="calcMode1">Hitung &amp; Layout</button>
+    <button class="btn primary" id="calcMode1">Hitung & Layout</button>
     <button class="btn outline" id="reset1">Reset</button>
     <div class="warning hidden" id="warning1"></div>
     <div id="resultMode1" class="result-block"></div>
     <svg id="lampLayout" viewBox="0 0 600 400"></svg>
   </div>
 
-  <!-- MODE 2 (lanjutan di Part 2) -->
+  <!-- MODE 2 -->
   <div id="mode2" class="card hidden">
     <div id="groupsContainer"></div>
     <button class="btn outline" id="addGroup">➕ Tambah Grup Lampu</button>
@@ -235,25 +238,16 @@ body.dark .warning { color:#ff7c7c; }
   </div>
 </div>
 
-<footer>
-  ⚡ Smart Lighting Planner Premium — by @bah
-  <small>&copy; <span id="year"></span> All rights reserved.</small>
-</footer>
+<footer>&copy; <span id="year"></span> by @bah</footer>
 
 <script>
-// ===== DARK MODE + MEMORY =====
+// ===== DARK MODE =====
 const toggleDark=document.getElementById('toggleDark');
-if(localStorage.getItem('darkMode')==='true'){document.body.classList.add('dark');toggleDark.textContent='☀️';}
-toggleDark.addEventListener('click',()=>{
-  document.body.classList.toggle('dark');
-  const isDark=document.body.classList.contains('dark');
-  toggleDark.textContent=isDark?'☀️':'🌙';
-  localStorage.setItem('darkMode',isDark);
-});
+toggleDark.addEventListener('click',()=>{document.body.classList.toggle('dark');toggleDark.textContent=document.body.classList.contains('dark')?'☀️':'🌙';});
 
-// ====== DATA ROOM & LAMPS ======
+// ===== DATA =====
 const ROOMS=[
- {key:"teras_rumah", name:"Teras (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal. lux:100", lux:100},
+  {key:"teras_rumah", name:"Teras (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal. lux:100", lux:100},
   {key:"ruang_tamu", name:"Ruang Tamu (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal. lux:150", lux:150},
   {key:"kamar_tidur", name:"Kamar Tidur (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal. lux:150", lux:150},
   {key:"dapur", name:"Dapur (Rumah Tinggal). lux: 250", kategori:"Rumah Tinggal. lux:250", lux:250},
@@ -319,7 +313,7 @@ const LAMPS = [
 ];
 
 
-// === Dropdown dynamic
+// ===== DROPDOWN =====
 const kategoriEl=document.getElementById("kategori");
 const ruanganEl=document.getElementById("ruangan");
 const lampSelect=document.getElementById("lampSelect");
@@ -345,7 +339,7 @@ LAMPS.forEach(l=>{
   lampSelect.appendChild(o);
 });
 
-// === Mode toggle
+// ===== MODE TOGGLE =====
 const mode1=document.getElementById("mode1");
 const mode2=document.getElementById("mode2");
 const btn1=document.getElementById("btnMode1");
@@ -353,7 +347,7 @@ const btn2=document.getElementById("btnMode2");
 btn1.onclick=()=>{mode1.classList.remove('hidden');mode2.classList.add('hidden');btn1.classList.add('active');btn2.classList.remove('active');};
 btn2.onclick=()=>{mode2.classList.remove('hidden');mode1.classList.add('hidden');btn2.classList.add('active');btn1.classList.remove('active');};
 
-// === Mode 1 Hitung
+// ===== MODE 1 =====
 document.getElementById("calcMode1").onclick=()=>{
   const rKey=ruanganEl.value;
   const lIdx=parseInt(lampSelect.value);
@@ -381,168 +375,53 @@ document.getElementById("calcMode1").onclick=()=>{
     circle.setAttribute("cx",cx);
     circle.setAttribute("cy",cy);
     circle.setAttribute("r",10);
-    circle.setAttribute("fill",i%2==0?"#9d7df5":"#7c3aed");
+    circle.setAttribute("fill",i%2==0?"#00aaff":"#0077cc");
     svg.appendChild(circle);
   }
   warn.classList.add("hidden");
-  if(lampCount%cols!==0){
-    warn.textContent="Peringatan: jumlah lampu tidak simetris, sesuaikan tata letak.";
-    warn.classList.remove("hidden");
-  }
-  result.innerHTML=
-    `Ruangan: ${ruangan.name}\n`+
-    `Luas: ${area.toFixed(2)} m²\n`+
-    `Kebutuhan cahaya: ${totalLum.toFixed(0)} lumen\n`+
-    `Lampu dipilih: ${lamp.name}\n`+
-    `Jumlah lampu: ${lampCount}\n`+
-    `Total daya: ${totalWatt.toFixed(1)} W\n`+
-    `Arus total: ${arus.toFixed(2)} A`;
+  if(lampCount%cols!==0){warn.textContent="⚠ Jumlah lampu tidak merata, pertimbangkan watt lain.";warn.classList.remove("hidden");}
+  result.textContent=`Ruangan: ${ruangan.name}\nLuas: ${area.toFixed(2)} m²\nLux: ${ruangan.lux}\nLampu: ${lamp.name}\nJumlah: ${lampCount}\nTotal Watt: ${totalWatt}W\nArus: ${arus.toFixed(2)}A`;
+};
+document.getElementById("reset1").onclick=()=>{document.querySelectorAll("#mode1 input, #mode1 select").forEach(i=>i.value="");document.getElementById("lampLayout").innerHTML="";document.getElementById("resultMode1").textContent="";};
+
+// ===== MODE 2 =====
+const groupsContainer=document.getElementById("groupsContainer");
+let groupCount=0;
+document.getElementById("addGroup").onclick=()=>{
+  groupCount++;
+  const div=document.createElement("div");
+  div.className="card";
+  div.innerHTML=`<strong>Grup ${groupCount}</strong>
+  <div class="grid-2">
+  <div><label>Jumlah Lampu</label><input type="number" class="jumlah" value="1"></div>
+  <div><label>Pilih Lampu</label><select class="lamp"></select></div>
+  <div><label>Efisiensi η</label><input type="number" class="eta" value="0.8" step="0.01"></div>
+  <div><button class="btn outline remove">❌ Hapus</button></div></div>`;
+  const sel=div.querySelector(".lamp");
+  LAMPS.forEach(l=>{const o=document.createElement("option");o.value=l.index;o.textContent=l.name;sel.appendChild(o);});
+  div.querySelector(".remove").onclick=()=>div.remove();
+  groupsContainer.appendChild(div);
 };
 
-document.getElementById("reset1").onclick=()=>{
-  document.getElementById("resultMode1").innerHTML="";
-  document.getElementById("lampLayout").innerHTML="";
-  document.getElementById("warning1").classList.add("hidden");
+document.getElementById("calcMode2").onclick=()=>{
+  const rows=[];
+  let totalW=0,totalVA=0,totalA=0;
+  groupsContainer.querySelectorAll(".card").forEach((grp,i)=>{
+    const jml=parseFloat(grp.querySelector(".jumlah").value);
+    const lamp=LAMPS.find(l=>l.index==parseInt(grp.querySelector(".lamp").value));
+    const eta=parseFloat(grp.querySelector(".eta").value);
+    const watt=jml*lamp.watt;
+    const VA=watt/eta;
+    const A=watt/220;
+    totalW+=watt; totalVA+=VA; totalA+=A;
+    const mcb=A<=6?6:A<=10?10:A<=16?16:A<=20?20:A<=25?25:32;
+    rows.push(`<tr><td>Grup ${i+1}</td><td>${jml}</td><td>${lamp.name}</td><td>${watt}</td><td>${VA.toFixed(2)}</td><td>${A.toFixed(2)}</td><td>${mcb}A</td></tr>`);
+  });
+  document.querySelector("#resultTable tbody").innerHTML=rows.join("")+`<tr><th colspan=3>Total</th><th>${totalW}</th><th>${totalVA.toFixed(2)}</th><th>${totalA.toFixed(2)}</th><th>-</th></tr>`;
+  document.getElementById("resultMode2").textContent=`Total Daya: ${totalW}W | Total Arus: ${totalA.toFixed(2)}A | MCB Utama: ${totalA<=6?6:totalA<=10?10:totalA<=16?16:totalA<=20?20:totalA<=25?25:32}A`;
 };
 
-// Footer year
 document.getElementById("year").textContent=new Date().getFullYear();
 </script>
 </body>
 </html>
-
-<script>
-// ===== MODE 2 (Hitung KKK & MCB) =====
-const groupsContainer = document.getElementById("groupsContainer");
-const addGroupBtn = document.getElementById("addGroup");
-const resultTableBody = document.querySelector("#resultTable tbody");
-const resultMode2 = document.getElementById("resultMode2");
-
-// simpan semua grup di array
-let groups = [];
-let groupIndex = 1;
-
-// Tambah grup
-addGroupBtn.addEventListener("click", () => {
-  const div = document.createElement("div");
-  div.className = "card";
-  div.innerHTML = `
-    <h3>Grup Lampu ${groupIndex}</h3>
-    <div class="grid-2">
-      <div>
-        <label>Jumlah Lampu</label>
-        <input type="number" class="lampCount" placeholder="Contoh: 10" min="1">
-      </div>
-      <div>
-        <label>Pilih Lampu</label>
-        <select class="lampType">
-          ${LAMPS.map(l => `<option value="${l.index}">${l.name} [${l.watt}W]</option>`).join("")}
-        </select>
-      </div>
-    </div>
-  `;
-  groupsContainer.appendChild(div);
-  groups.push({ id: groupIndex, countEl: div.querySelector(".lampCount"), typeEl: div.querySelector(".lampType") });
-  groupIndex++;
-});
-
-// Tombol hitung mode 2
-document.getElementById("calcMode2").addEventListener("click", () => {
-  resultTableBody.innerHTML = "";
-  let totalWattAll = 0, totalVAAll = 0, totalAAll = 0;
-  resultMode2.textContent = "";
-
-  groups.forEach((g, i) => {
-    const count = parseInt(g.countEl.value);
-    const lamp = LAMPS.find(l => l.index == g.typeEl.value);
-    if (isNaN(count) || count <= 0) return;
-
-    const totalWatt = count * lamp.watt;
-    const totalVA = totalWatt / 0.85; // asumsi pf=0.85
-    const arus = totalWatt / 220;
-    const mcb = arus <= 6 ? "6A" : arus <= 10 ? "10A" : arus <= 16 ? "16A" : arus <= 20 ? "20A" : "25A";
-
-    totalWattAll += totalWatt;
-    totalVAAll += totalVA;
-    totalAAll += arus;
-
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>Grup ${i + 1}</td>
-      <td>${count}</td>
-      <td>${lamp.name}</td>
-      <td>${totalWatt.toFixed(1)}</td>
-      <td>${totalVA.toFixed(1)}</td>
-      <td>${arus.toFixed(2)}</td>
-      <td>${mcb}</td>
-    `;
-    resultTableBody.appendChild(row);
-  });
-
-  if (groups.length === 0) {
-    alert("Tambahkan grup dulu!");
-    return;
-  }
-
-  resultMode2.textContent = `
-Total Keseluruhan:
-  Total Daya (W): ${totalWattAll.toFixed(1)} W
-  Total VA: ${totalVAAll.toFixed(1)} VA
-  Total Arus: ${totalAAll.toFixed(2)} A
-  Rekomendasi MCB Utama: ${totalAAll <= 6 ? "6A" : totalAAll <= 10 ? "10A" : totalAAll <= 16 ? "16A" : totalAAll <= 20 ? "20A" : "25A"}
-  Jumlah Grup: ${groups.length}
-  `;
-});
-
-// ===== EXPORT TO EXCEL =====
-const exportExcelBtn = document.createElement("button");
-exportExcelBtn.className = "btn outline";
-exportExcelBtn.textContent = "📊 Ekspor ke Excel";
-resultMode2.parentElement.appendChild(exportExcelBtn);
-
-exportExcelBtn.addEventListener("click", () => {
-  if (resultTableBody.rows.length === 0) return alert("Belum ada data untuk diekspor!");
-  let csv = "Grup,Jumlah Lampu,Lampu,Total Watt,Total VA,Arus (A),MCB\n";
-  for (const r of resultTableBody.rows) {
-    const cols = [...r.children].map(td => td.textContent);
-    csv += cols.join(",") + "\n";
-  }
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "SmartLightingPlanner.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-// ===== EXPORT TO PDF =====
-const exportPdfBtn = document.createElement("button");
-exportPdfBtn.className = "btn outline";
-exportPdfBtn.textContent = "📄 Ekspor ke PDF";
-resultMode2.parentElement.appendChild(exportPdfBtn);
-
-exportPdfBtn.addEventListener("click", () => {
-  if (resultTableBody.rows.length === 0) return alert("Belum ada data untuk diekspor!");
-  const printWin = window.open("", "", "width=900,height=700");
-  const content = `
-    <html>
-    <head><title>Smart Lighting Planner PDF</title></head>
-    <body style="font-family:sans-serif;">
-      <h2 style="text-align:center;">Smart Lighting Planner Premium</h2>
-      <p>${resultMode2.textContent.replace(/\n/g,"<br>")}</p>
-      <table border="1" cellspacing="0" cellpadding="6" style="width:100%;border-collapse:collapse;">
-        <thead style="background:#7c3aed;color:#fff;">
-          <tr><th>Grup</th><th>Jumlah Lampu</th><th>Lampu</th><th>Total Watt</th><th>Total VA</th><th>Arus (A)</th><th>MCB</th></tr>
-        </thead>
-        <tbody>${resultTableBody.innerHTML}</tbody>
-      </table>
-      <p style="text-align:center;margin-top:20px;opacity:0.6;">Smart Lighting Planner Premium — by @bah</p>
-    </body>
-    </html>
-  `;
-  printWin.document.write(content);
-  printWin.document.close();
-  printWin.print();
-});
-</script>
