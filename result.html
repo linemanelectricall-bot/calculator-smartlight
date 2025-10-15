@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Hasil — Smart Lighting Planner</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background:#f5f7fb; color:#042029; }
+    .card { border-radius:12px; }
+    .warn { background:#fff4f4; border-left:4px solid #ff7b7b; padding:10px; border-radius:8px; }
+    .ok { background:#f2fff4; border-left:4px solid #2ecc71; padding:10px; border-radius:8px; }
+    table { font-size:0.95rem; }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <a href="/" class="btn btn-link mb-3">← Kembali</a>
+
+    {% if mode == "mode1" %}
+      <div class="card p-4 mb-3">
+        <h4>Hasil — Mode 1 (Per Titik)</h4>
+        <p><b>{{ calc1.room.name }}</b> — Luas: {{ calc1.area }} m² • Target: {{ calc1.E }} lux</p>
+        <hr>
+        <p><b>Lampu terpilih:</b> {{ calc1.lamp.name }} — {{ calc1.lamp.watt }} W • {{ calc1.lamp.lumen }} lm</p>
+        <p><b>Lumen total dibutuhkan:</b> {{ calc1.total_lumen_needed }} lm</p>
+        <p><b>Jumlah titik lampu:</b> {{ calc1.n_lamps }}</p>
+        <p><b>Total watt:</b> {{ calc1.total_watt }} W • <b>Perkiraan arus:</b> {{ calc1.amp_total }} A</p>
+
+        <div class="mt-3">
+          <h6>Layout (saran)</h6>
+          <p>Grid: {{ calc1.layout.cols }} kolom × {{ calc1.layout.rows }} baris</p>
+          <p>Distribusi per baris: {{ calc1.layout.distribution }}</p>
+          {% if calc1.layout.imbalance > 0 %}
+            <div class="warn">
+              <b>Peringatan:</b> Distribusi titik lampu tidak seimbang (selisih {{ calc1.layout.imbalance }}) — pertimbangkan menyesuaikan jumlah titik atau memilih lampu dengan lumen lebih besar.
+            </div>
+            {% if suggestion %}
+              <div class="mt-2 p-2 border rounded">
+                <b>Saran:</b> Gunakan jumlah titik seimbang: <b>{{ suggestion.candidate_count }}</b> titik. Per lampu butuh ~{{ suggestion.required_lumen_per_lamp }} lm.
+                <ul>
+                  {% for lp in suggestion.candidate_lamps %}
+                    <li>{{ lp.name }} — {{ lp.watt }} W / {{ lp.lumen }} lm</li>
+                  {% else %}
+                    <li>Tidak ditemukan lampu cocok pada data.</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="ok">Layout seimbang ✅</div>
+          {% endif %}
+        </div>
+
+        <form method="post" action="/download_pdf" class="mt-3">
+          <input type="hidden" name="mode" value="mode1">
+          <!-- pass needed fields to regenerate -->
+          <input type="hidden" name="room" value="{{ calc1.room.key }}">
+          <input type="hidden" name="length" value="{{ calc1.area|float }}">
+          <input type="hidden" name="width" value="1">
+          <input type="hidden" name="eta" value="{{ calc1.eta }}">
+          <input type="hidden" name="lamp_index" value="{{ LAMPS.index(calc1.lamp) if calc1.lamp in LAMPS else 0 }}">
+          <button class="btn btn-success">Download PDF</button>
+        </form>
+      </div>
+
+    {% else %}
+      <div class="card p-4 mb-3">
+        <h4>Hasil — Mode 2 (Total Daya & Pembagian Grup)</h4>
+        <p><b>Total Watt (lampu):</b> {{ calc2.total_watt }} W</p>
+        <p><b>Total VA (inkl. KKK):</b> {{ calc2.total_va }} VA</p>
+        <p><b>Perkiraan arus total:</b> {{ calc2.I_total }} A • <b>Required Amp (margin):</b> {{ calc2.required_amp }} A</p>
+        <p><b>Rekomendasi MCB utama:</b> {{ calc2.recommended_main }} A</p>
+
+        <hr>
+        <h6>Detail Grup</h6>
+        <table class="table table-sm">
+          <thead><tr><th>Grup</th><th>Jumlah Lampu</th><th>Watt per lamp</th><th>Total Watt</th><th>Amp</th><th>MCB Rec</th></tr></thead>
+          <tbody>
+            {% for g in calc2.groups %}
+              <tr>
+                <td>{{ g.group }}</td>
+                <td>{{ g.count }}</td>
+                <td>{{ g.watt_each }} W</td>
+                <td>{{ g.watt_total }} W</td>
+                <td>{{ g.amp }} A</td>
+                <td>{{ g.recommended_mcb }} A</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <form method="post" action="/download_pdf" class="mt-3">
+          <input type="hidden" name="mode" value="mode2">
+          <!-- pass arrays for groups -->
+          {% for g in calc2.groups %}
+            <input type="hidden" name="group_count[]" value="{{ g.count }}">
+            <input type="hidden" name="group_watt[]" value="{{ g.watt_each }}">
+          {% endfor %}
+          <input type="hidden" name="jumlahKKK" value="{{ calc2.kkk_total_va // (request.form.get('dayaKKK')|int if request.form.get('dayaKKK') else 1) }}">
+          <input type="hidden" name="dayaKKK" value="{{ calc2.kkk_total_va // (request.form.get('jumlahKKK')|int if request.form.get('jumlahKKK') else 1) }}">
+          <input type="hidden" name="mcbType" value="{{ request.form.get('mcbType','1P') }}">
+          <input type="hidden" name="efficiency" value="{{ calc2.efficiency }}">
+          <button class="btn btn-success">Download PDF</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
