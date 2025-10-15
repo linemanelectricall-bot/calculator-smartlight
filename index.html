@@ -1,609 +1,350 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <title>Smart Lighting Planner</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Lighting Planner Premium</title>
+<style>
+body{margin:0;padding:0;font-family:'Segoe UI', Tahoma, Geneva, Verdana,sans-serif;background:#f5f7fa;color:#333;}
+header{background:linear-gradient(90deg,#0077cc,#00aaff);color:#fff;padding:40px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+header h1{font-size:2.8em;margin:0;font-weight:700;text-shadow:0 3px 6px rgba(0,0,0,0.3);}
+header p{margin-top:8px;font-size:1.2em;opacity:0.9;}
+.wrap{max-width:1100px;margin:30px auto;padding:0 20px;}
+.card{background:#fff;padding:25px;margin-bottom:25px;border-radius:15px;box-shadow:0 6px 20px rgba(0,0,0,0.1);transition:0.3s;}
+.card:hover{box-shadow:0 8px 25px rgba(0,0,0,0.15);}
+button.btn{padding:12px 25px;margin:5px;border:none;border-radius:10px;cursor:pointer;font-weight:600;transition:0.3s;}
+button.btn:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+button.mode-btn{background:#0077cc;color:#fff;}
+button.mode-btn.active{background:#00aaff;box-shadow:0 0 20px #00aaff;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:px20;align-items:end;}
+/* BESARKAN DROPDOWN / SELECT UNTUK VISUAL PREMIUM */
+.input-row input,
+.input-row select,
+#kategori,
+#ruangan,
+#lampSelect {
+  flex:1;
+  padding:13px 11px;      /* padding lebih tebal */
+  font-size:1.2em;        /* ukuran teks lebih besar */
+  border-radius:10px;     /* sudut lebih bulat */
+  border:1px solid #ccc;
+  cursor:pointer;         /* pointer untuk klik */
+  transition:0.3s;
+  width:100%;
+}
 
-  <!-- gunakan style.css di folder static -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+.input-row input:focus,
+.input-row select:focus,
+#kategori:focus,
+#ruangan:focus,
+#lampSelect:focus {
+  border-color:#0077cc;
+  box-shadow:0 0 10px #00aaff inset;
+}
+.input-row input:focus,.input-row select:focus{border-color:#0077cc;box-shadow:0 0 15px #00aaff inset;}
+label{display:block;margin-bottom:10px;font-weight:600;}
 
-  <!-- safe JSON injection: gunakan script[type=application/json] di body bawah,
-       tapi juga buat shortcut ROOMS/LAMPS setelah parsing -->
+.result-block{margin-top:20px;padding:20px;border:1px dashed #0077cc;border-radius:10px;background:#f9f9f9;white-space:pre-wrap;font-family:monospace;}
+canvas{border:1px solid #0077cc;border-radius:12px;margin-top:15px;}
+.hidden{display:none;}
+footer{text-align:center;padding:20px;background:#e0e0e0;margin-top:40px;font-weight:600;border-top:1px solid #ccc;}
+.warning{color:red;font-weight:700;margin-top:10px;}
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+table,th,td{border:1px solid #0077cc;}
+th,td{padding:8px;text-align:center;}
+th{background:#00aaff;color:#fff;}
+button.addLamp{padding:6px 12px;margin-top:5px;background:#0077cc;color:#fff;border:none;border-radius:6px;cursor:pointer;}
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="wrap">
-      <h1>💡 Smart Lighting Planner</h1>
-      <p class="muted">Kalkulator Lumen · Pemilihan Lampu · Pembagian Grup & Rekomendasi MCB</p>
-    </div>
-  </header>
+<header>
+<h1>Smart Lighting Planner Premium</h1>
+<p>Hitung lampu, layout, Watt & VA sesuai SNI secara profesional</p>
+</header>
+<div class="wrap">
+<div class="card" style="text-align:center;">
+<button class="btn mode-btn active" id="btnMode1">Mode 1 — Per Titik</button>
+<button class="btn mode-btn" id="btnMode2">Mode 2 — Multi Grup / KKK</button>
+</div>
 
-  <main class="wrap">
-    <section class="card mode-select">
-      <label for="mode">Pilih Mode</label>
-      <div class="row">
-        <select id="mode" onchange="switchMode()">
-          <option value="1">Mode 1 — Per Titik (tata letak)</option>
-          <option value="2">Mode 2 — Penotalan & Pembagian Grup</option>
-        </select>
-      </div>
-    </section>
+<!-- Mode 1 -->
+<div id="mode1" class="card">
+<div class="grid-2">
+<div>
+<label for="kategori">Kategori Ruangan</label>
+<select id="kategori"><option value="" disabled selected>-- Pilih Kategori --</option></select>
+</div>
+<div>
+<label for="ruangan">Jenis Ruangan</label>
+<select id="ruangan"><option value="" disabled selected>-- Pilih Ruangan --</option></select>
+</div>
+</div>
+<div class="input-row">
+<div>
+<label for="length">Panjang (m)</label>
+<input type="number" id="length" placeholder="contoh: 5">
+</div>
+<div>
+<label for="width">Lebar (m)</label>
+<input type="number" id="width" placeholder="contoh: 4">
+</div>
+<div>
+<label for="eta">Efisiensi η (0-1)</label>
+<input type="number" id="eta" step="0.01" value="0.8">
+</div>
+</div>
+<div style="margin-top:20px;">
+<label for="lampSelect">Pilih Lampu</label>
+<select id="lampSelect"><option value="" disabled selected>-- Pilih Lampu --</option></select>
+</div>
+<button class="btn mode-btn primary" id="calcMode1">Hitung & Tampilkan Layout</button>
+<div id="warning" class="warning hidden"></div>
+<div id="resultMode1" class="result-block"></div>
+<canvas id="layoutCanvas" width="700" height="450"></canvas>
+</div>
 
-    <!-- MODE 1 -->
-    <section id="mode1" class="card">
-      <h2>Mode 1 — Per Titik</h2>
+<!-- Mode 2 -->
+<div id="mode2" class="card hidden">
+<div class="grid-2">
+<div>
+<label for="kkkCount">Jumlah KKK</label>
+<input type="number" id="kkkCount" placeholder="contoh: 2">
+</div>
+<div>
+<label for="mcbType">Tipe Phase</label>
+<select id="mcbType"><option value="1phase">1 Phase</option><option value="3phase">3 Phase</option></select>
+</div>
+<div>
+<label for="effMode2">Efisiensi η (0-1)</label>
+<input type="number" id="effMode2" step="0.01" value="0.8">
+</div>
+</div>
+<div id="groupsContainer"></div>
+<button class="btn addLamp" id="addGroup">Tambah Grup Lampu</button>
+<button class="btn primary" id="calcMode2">Hitung Mode 2</button>
+<div id="resultMode2" class="result-block"></div>
+</div>
+</div>
+<footer>
+&copy; <span id="year"></span> by.@bah
+</footer>
 
-      <div class="grid-2">
-        <div>
-          <label>Kategori Ruangan</label>
-          <select id="kategori" onchange="updateRooms()">
-            <option value="">-- Pilih Kategori --</option>
-            {% for kat in categories %}
-              <option value="{{ kat }}">{{ kat }}</option>
-            {% endfor %}
-          </select>
-        </div>
+<script>
+// ===== Data ROOMS & LAMPS =====
+const ROOMS=[
+{key:"teras_rumah", name:"Teras (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:100},
+{key:"ruang_tamu", name:"Ruang Tamu (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:150},
+{key:"kamar_tidur", name:"Kamar Tidur (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:150},
+{key:"dapur", name:"Dapur (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:250},
+{key:"garasi", name:"Garasi (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:75},
+{key:"koridor_rumah", name:"Koridor (Rumah Tinggal)", kategori:"Rumah Tinggal", lux:100},
+{key:"ruang_direktur", name:"Ruang Direktur (Perkantoran)", kategori:"Perkantoran", lux:350},
+{key:"ruang_rapat", name:"Ruang Rapat (Perkantoran)", kategori:"Perkantoran", lux:300},
+{key:"ruang_komputer", name:"Ruang Komputer (Perkantoran)", kategori:"Perkantoran", lux:500},
+{key:"ruang_arsip", name:"Ruang Arsip (Perkantoran)", kategori:"Perkantoran", lux:200},
+{key:"resepsionis", name:"Resepsionis (Perkantoran)", kategori:"Perkantoran", lux:300},
+{key:"open_office", name:"Ruang Kerja Terbuka (Perkantoran)", kategori:"Perkantoran", lux:350},
+{key:"kelas", name:"Ruang Kelas (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:300},
+{key:"lab_fisika", name:"Laboratorium Fisika (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:500},
+{key:"lab_komputer", name:"Laboratorium Komputer (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:500},
+{key:"perpustakaan", name:"Perpustakaan (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:300},
+{key:"ruang_gambar", name:"Ruang Gambar (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:750},
+{key:"aula", name:"Aula / Auditorium (Lembaga Pendidikan)", kategori:"Lembaga Pendidikan", lux:200},
+{key:"lobi_hotel", name:"Lobi Hotel (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:200},
+{key:"kamar_hotel", name:"Kamar Hotel (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:150},
+{key:"ruang_makan", name:"Ruang Makan (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:200},
+{key:"dapur_restoran", name:"Dapur Restoran (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:500},
+{key:"bar", name:"Bar / Lounge (Hotel & Restoran)", kategori:"Hotel & Restoran", lux:150},
+{key:"ruang_operasi", name:"Ruang Operasi (Rumah Sakit)", kategori:"Rumah Sakit", lux:1000},
+{key:"icu", name:"ICU (Rumah Sakit)", kategori:"Rumah Sakit", lux:300},
+{key:"rawat_inap", name:"Ruang Rawat Inap (Rumah Sakit)", kategori:"Rumah Sakit", lux:200},
+{key:"lab_klinik", name:"Laboratorium Klinik (Rumah Sakit)", kategori:"Rumah Sakit", lux:750},
+{key:"farmasi", name:"Farmasi / Apotek (Rumah Sakit)", kategori:"Rumah Sakit", lux:500},
+{key:"koridor_rumah_sakit", name:"Koridor (Rumah Sakit)", kategori:"Rumah Sakit", lux:150},
+{key:"produksi_kasar", name:"Produksi Kasar (Industri)", kategori:"Industri", lux:200},
+{key:"perakitan_presisi", name:"Perakitan Presisi (Industri)", kategori:"Industri", lux:1000},
+{key:"gudang", name:"Gudang (Industri)", kategori:"Industri", lux:150},
+{key:"ruang_kontrol", name:"Ruang Kontrol (Industri)", kategori:"Industri", lux:500},
+{key:"maintenance", name:"Workshop / Maintenance (Industri)", kategori:"Industri", lux:300},
+{key:"supermarket", name:"Supermarket (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:750},
+{key:"etalase", name:"Etalase / Display (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:1000},
+{key:"area_kasir", name:"Area Kasir (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:500},
+{key:"area_parkir", name:"Area Parkir Basement (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:75},
+{key:"foodcourt", name:"Foodcourt (Pertokoan & Mall)", kategori:"Pertokoan & Mall", lux:300},
+{key:"jalan_utama", name:"Jalan Utama (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:20},
+{key:"jalan_lingkungan", name:"Jalan Lingkungan (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:10},
+{key:"terminal", name:"Terminal (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:150},
+{key:"stasiun", name:"Stasiun Kereta (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:200},
+{key:"bandara", name:"Bandara / Ruang Tunggu (Jalan & Transportasi)", kategori:"Jalan & Transportasi", lux:300}
+];
 
-        <div>
-          <label>Jenis Ruangan (standar lux akan muncul)</label>
-          <select id="ruangan">
-            <option value="">-- Pilih Ruangan --</option>
-          </select>
-        </div>
+const LAMPS=[
+{index:0,name:"LED Philips 5W",watt:5,lumen:450},
+{index:1,name:"LED Philips 7W",watt:7,lumen:600},
+{index:2,name:"LED Philips 9W",watt:9,lumen:800},
+{index:3,name:"LED Philips 12W",watt:12,lumen:1055},
+{index:4,name:"LED Philips 15W",watt:15,lumen:1300},
+{index:5,name:"LED Philips 18W",watt:18,lumen:1500},
+{index:6,name:"LED Panasonic 5W",watt:5,lumen:420},
+{index:7,name:"LED Panasonic 9W",watt:9,lumen:850},
+{index:8,name:"LED Panasonic 12W",watt:12,lumen:1100},
+{index:9,name:"LED Panasonic 18W",watt:18,lumen:1600},
+{index:10,name:"LED Osram 5W",watt:5,lumen:400},
+{index:11,name:"LED Osram 10W",watt:10,lumen:900},
+{index:12,name:"LED Osram 15W",watt:15,lumen:1400},
+{index:13,name:"LED Osram 20W",watt:20,lumen:1800},
+{index:14,name:"Lampu TL 18W",watt:18,lumen:1200},
+{index:15,name:"Lampu TL 36W",watt:36,lumen:3350},
+{index:16,name:"Lampu TL 40W",watt:40,lumen:3600},
+{index:17,name:"Lampu TL 58W",watt:58,lumen:4000},
+{index:18,name:"Lampu TL 80W",watt:80,lumen:5400},
+{index:19,name:"Downlight LED 5W",watt:5,lumen:450},
+{index:20,name:"Downlight LED 10W",watt:10,lumen:900},
+{index:21,name:"Downlight LED 12W",watt:12,lumen:1000},
+{index:22,name:"Downlight LED 18W",watt:18,lumen:1500},
+{index:23,name:"Spotlight LED 5W",watt:5,lumen:400},
+{index:24,name:"Spotlight LED 10W",watt:10,lumen:900},
+{index:25,name:"Spotlight LED 15W",watt:15,lumen:1400},
+{index:26,name:"Spotlight LED 20W",watt:20,lumen:1800},
+{index:27,name:"Floodlight LED 20W",watt:20,lumen:1800},
+{index:28,name:"Floodlight LED 30W",watt:30,lumen:2700},
+{index:29,name:"Floodlight LED 50W",watt:50,lumen:4500},
+{index:30,name:"Floodlight LED 70W",watt:70,lumen:6300},
+{index:31,name:"Floodlight LED 100W",watt:100,lumen:9000}
+];
 
-        <div>
-          <label>Panjang (m)</label>
-          <input id="panjang" type="number" step="0.1" value="5" />
-        </div>
+// ===== Populate dropdowns =====
+const kategoriEl=document.getElementById("kategori");
+const ruanganEl=document.getElementById("ruangan");
+const lampSelect=document.getElementById("lampSelect");
+const kategoriList=[...new Set(ROOMS.map(r=>r.kategori))];
+kategoriList.forEach(k=>{let opt=document.createElement("option");opt.value=k;opt.textContent=k;kategoriEl.appendChild(opt);});
+kategoriEl.addEventListener("change",()=>{ruanganEl.innerHTML='<option value="" disabled selected>-- Pilih Ruangan --</option>';ROOMS.filter(r=>r.kategori==kategoriEl.value).forEach(r=>{let opt=document.createElement("option");opt.value=r.key;opt.textContent=r.name;ruanganEl.appendChild(opt);});});
+LAMPS.forEach(l=>{let opt=document.createElement("option");opt.value=l.index;opt.textContent=l.name+" ["+l.watt+"W | "+l.lumen+"lm]";lampSelect.appendChild(opt);});
 
-        <div>
-          <label>Lebar (m)</label>
-          <input id="lebar" type="number" step="0.1" value="4" />
-        </div>
+// ===== Mode Switch =====
+const btnMode1=document.getElementById("btnMode1");
+const btnMode2=document.getElementById("btnMode2");
+const mode1Div=document.getElementById("mode1");
+const mode2Div=document.getElementById("mode2");
+btnMode1.addEventListener("click",()=>{mode1Div.classList.remove("hidden");mode2Div.classList.add("hidden");btnMode1.classList.add("active");btnMode2.classList.remove("active");});
+btnMode2.addEventListener("click",()=>{mode2Div.classList.remove("hidden");mode1Div.classList.add("hidden");btnMode2.classList.add("active");btnMode1.classList.remove("active");});
 
-        <div>
-          <label>Efisiensi (η)</label>
-          <select id="eta">
-            <option value="0.7">0.70</option>
-            <option value="0.8" selected>0.80</option>
-            <option value="0.9">0.90</option>
-          </select>
-        </div>
+document.getElementById("year").textContent=new Date().getFullYear();
 
-        <div>
-          <label>Pilih Lampu (lihat spesifikasi)</label>
-          <select id="lampSelect" onchange="showLampSpec()">
-            <option value="">-- Pilih Lampu --</option>
-            {% for lamp in lamps %}
-              <option value="{{ loop.index0 }}" data-watt="{{ lamp.watt }}" data-lumen="{{ lamp.lumen }}" data-brand="{{ lamp.name }}">{{ lamp.name }} — {{ lamp.watt }}W · {{ lamp.lumen }} lm</option>
-            {% endfor %}
-          </select>
-        </div>
+// ===== Canvas =====
+const canvas=document.getElementById("layoutCanvas");
+const ctx=canvas.getContext("2d");
+function drawLayout(points){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  points.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,12,0,2*Math.PI);ctx.fillStyle="#00aaff";ctx.fill();ctx.strokeStyle="#0077cc";ctx.lineWidth=2;ctx.stroke();});
+}
 
-        <div class="lamp-spec card-small" id="lampSpec">
-          <strong>Spesifikasi Lampu</strong>
-          <div id="lampSpecBody">Pilih lampu untuk melihat spesifikasi (lumen, watt).</div>
-        </div>
+// ===== Mode 1 Calculation (lanjutan) =====
+document.getElementById("calcMode1").addEventListener("click",()=>{
+  const ruanganKey=ruanganEl.value;
+  const lampIdx=parseInt(lampSelect.value);
+  const length=parseFloat(document.getElementById("length").value);
+  const width=parseFloat(document.getElementById("width").value);
+  const eta=parseFloat(document.getElementById("eta").value);
+  const warningEl=document.getElementById("warning");
+  warningEl.classList.add("hidden"); warningEl.textContent="";
+  if(!ruanganKey||isNaN(lampIdx)||isNaN(length)||isNaN(width)){alert("Isi semua field!");return;}
+  const ruangan=ROOMS.find(r=>r.key==ruanganKey);
+  const lamp=LAMPS.find(l=>l.index==lampIdx);
+  const area=length*width;
+  const totalLum=ruangan.lux*area/eta;
+  const lampCount=Math.ceil(totalLum/lamp.lumen);
+  const va=lamp.watt*lampCount;
+  const arus=va/220;
 
-        <div>
-          <label>Mode Hitung</label>
-          <select id="countMode">
-            <option value="per_titik" selected>Per Titik (jumlah titik)</option>
-            <option value="per_luas">Per Luas (jarak antar titik — *coming simple grid*)</option>
-          </select>
-        </div>
-
-        <div style="align-self:end;">
-          <button class="btn primary" onclick="calculateMode1()">💡 Hitung Perencanaan</button>
-          <button class="btn outline" onclick="downloadPdfMode1()">📄 Download PDF</button>
-        </div>
-      </div>
-
-      <div id="result1" class="result-block">
-        <!-- hasil akan di-push ke sini -->
-      </div>
-
-      <div class="canvas-wrap">
-        <canvas id="layoutCanvas" width="800" height="400" style="max-width:100%;border-radius:8px;background:#0b1220;"></canvas>
-      </div>
-
-    </section>
-
-    <!-- MODE 2 -->
-    <section id="mode2" class="card hidden">
-      <h2>Mode 2 — Penotalan & Pembagian Grup</h2>
-
-      <p class="muted">Tambahkan beberapa jenis lampu (set) dengan jumlah & watt berbeda. Sistem akan menghitung total & membagi ke grup yang dipilih.</p>
-
-      <div id="setsContainer"></div>
-
-      <div class="row">
-        <button class="btn" onclick="addLampSet()">+ Tambah Lampu (Set)</button>
-      </div>
-
-      <hr/>
-
-      <div class="grid-2">
-        <div>
-          <label>Jumlah KKK</label>
-          <input id="kkk_count" type="number" min="0" value="0" />
-        </div>
-        <div>
-          <label>Daya per KKK (VA)</label>
-          <select id="kkk_va">
-            <option value="50">50 VA</option>
-            <option value="100">100 VA</option>
-            <option value="150">150 VA</option>
-            <option value="200">200 VA</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Efisiensi (η)</label>
-          <select id="eta2">
-            <option value="0.7">0.70</option>
-            <option value="0.8" selected>0.80</option>
-            <option value="0.85">0.85</option>
-            <option value="0.9">0.90</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Jumlah Grup</label>
-          <input id="groupsCount" type="number" min="1" value="1" />
-        </div>
-
-        <div>
-          <label>Jenis MCB Utama</label>
-          <select id="main_mcb">
-            <option value="">(pilih setelah hitung)</option>
-            <option>1P 10A</option><option>1P 16A</option><option>1P 20A</option><option>1P 32A</option>
-            <option>3P 16A</option><option>3P 20A</option><option>3P 32A</option>
-          </select>
-        </div>
-
-        <div style="align-self:end;">
-          <button class="btn primary" onclick="calculateMode2()">⚡ Hitung Total & Rekomendasi</button>
-        </div>
-      </div>
-
-      <div id="result2" class="result-block"></div>
-    </section>
-  </main>
-
-  <footer class="wrap muted">© 2025 — Smart Lighting Planner</footer>
-
-  <!-- safe embed JSON data -->
-  <script id="rooms-json" type="application/json">
-    {{ rooms | tojson }}
-  </script>
-  <script id="lamps-json" type="application/json">
-    {{ lamps | tojson }}
-  </script>
-
-  <!-- JAVASCRIPT: semua handling -->
-  <script>
-  // parse data safely
-  const ROOMS = JSON.parse(document.getElementById('rooms-json').textContent || '[]');
-  const LAMPS = JSON.parse(document.getElementById('lamps-json').textContent || '[]');
-
-  // helper constants
-  const STD_VOLTAGE = 220;
-  const STD_LINE_VOLTAGE = 400; // for 3-phase calculations
-
-  // ---------- UI helpers ----------
-  function switchMode(){
-    const m = document.getElementById('mode').value;
-    document.getElementById('mode1').classList.toggle('hidden', m !== '1');
-    document.getElementById('mode2').classList.toggle('hidden', m !== '2');
-  }
-
-  function updateRooms(){
-    const kat = document.getElementById('kategori').value;
-    const sel = document.getElementById('ruangan');
-    sel.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
-    ROOMS.filter(r => r.kategori === kat).forEach(r => {
-      const o = document.createElement('option');
-      o.value = r.key;
-      o.textContent = `${r.name} — ${r.lux} lux`;
-      sel.appendChild(o);
-    });
-  }
-
-  function showLampSpec(){
-    const sel = document.getElementById('lampSelect');
-    const idx = sel.value;
-    const out = document.getElementById('lampSpecBody');
-    if(idx === '') { out.innerHTML = 'Pilih lampu untuk melihat spesifikasi.'; return; }
-    const lamp = LAMPS[parseInt(idx)];
-    // display known fields
-    out.innerHTML = `
-      <div><b>${lamp.name}</b></div>
-      <div>Lumen: <b>${lamp.lumen}</b> lm</div>
-      <div>Watt: <b>${lamp.watt}</b> W</div>
-      <div>Perkiraan Arus: <b>${(lamp.watt / STD_VOLTAGE).toFixed(2)}</b> A (per lampu)</div>
-    `;
-  }
-
-  // ---------- MODE 1 calculation & visualization ----------
-  function calculateMode1(){
-    const ruanganKey = document.getElementById('ruangan').value;
-    const lampIndex = document.getElementById('lampSelect').value;
-    if(!ruanganKey || lampIndex === '') { alert('Pilih ruangan & lampu dulu.'); return; }
-
-    const panjang = parseFloat(document.getElementById('panjang').value) || 0;
-    const lebar  = parseFloat(document.getElementById('lebar').value) || 0;
-    const eta    = parseFloat(document.getElementById('eta').value) || 0.8;
-    const room = ROOMS.find(r => r.key === ruanganKey);
-    const lamp = LAMPS[parseInt(lampIndex)];
-    const area = panjang * lebar;
-    const required_lumen = (room.lux * area) / eta; // total lumens needed
-    const n_lamps = Math.max(1, Math.ceil(required_lumen / lamp.lumen));
-    const total_lumen = n_lamps * lamp.lumen;
-    const total_watt = n_lamps * lamp.watt;
-    const total_amp = total_watt / STD_VOLTAGE;
-
-    // generate layout (grid)
-    const layout = makeGridLayout(n_lamps);
-
-    // detect imbalance
-    const imbalance = detectImbalance(layout.distribution);
-    const warning = imbalance.isImbalanced ? `⚠️ Jumlah lampu tidak seimbang (row counts: ${layout.distribution.join(', ')}). ${imbalance.suggestion ? 'Saran: '+imbalance.suggestion : ''}` : '';
-
-    // show results
-    const resEl = document.getElementById('result1');
-    resEl.innerHTML = `
-      <div class="summary">
-        <p><b>Ruangan:</b> ${room.name} — target ${room.lux} lux</p>
-        <p><b>Luas:</b> ${area.toFixed(2)} m²</p>
-        <p><b>Efisiensi (η):</b> ${eta}</p>
-        <hr/>
-        <p><b>Jumlah titik lampu:</b> ${n_lamps}</p>
-        <p><b>Total lumen terpasang:</b> ${total_lumen} lm</p>
-        <p><b>Total daya:</b> ${total_watt} W</p>
-        <p><b>Perkiraan arus:</b> ${total_amp.toFixed(2)} A</p>
-        <p style="color: #f5c542">${warning}</p>
-      </div>
-    `;
-
-    // draw layout to canvas
-    drawLayoutOnCanvas(layout.rows, layout.cols, layout.distribution);
-
-    // store last calculation for Mode2 / PDF
-    window.lastCalc = {
-      mode:'mode1',
-      room, lamp, area, eta, n_lamps, total_lumen, total_watt, total_amp,
-      layout
-    };
-  }
-
-  // make grid layout (choose cols as floor(sqrt(n)) etc.)
-  function makeGridLayout(n){
-    let cols = Math.floor(Math.sqrt(n));
-    if(cols < 1) cols = 1;
-    let rows = Math.ceil(n / cols);
-    // distribution: fill rows with counts (attempt balanced)
-    const dist = Array(rows).fill(0);
-    for(let i=0;i<n;i++){
-      dist[i % rows] += 1;
-    }
-    // If top-heavy (we want row-major layout) we can reorder to show
-    return { rows, cols, distribution: dist };
-  }
-
-  function detectImbalance(dist){
-    if(dist.length <= 1) return { isImbalanced:false };
-    const mx = Math.max(...dist);
-    const mn = Math.min(...dist);
-    const isImbalanced = (mx - mn) > 0;
-    let suggestion = null;
-    if(isImbalanced){
-      // suggest nearest candidate counts (n-3..n+3) that can make even rows
-      const n = dist.reduce((a,b)=>a+b,0);
-      for(let cand = n-3; cand<=n+3; cand++){
-        if(cand<=0) continue;
-        // find divisors to make equal rows (prefer small difference)
-        for(let r=2;r<=Math.ceil(Math.sqrt(cand))+1;r++){
-          if(cand % r === 0){
-            suggestion = `Pertimbangkan jumlah lampu ${cand} (membuat grid ${r}x${cand/r})`;
-            break;
-          }
-        }
-        if(suggestion) break;
-      }
-    }
-    return { isImbalanced, suggestion };
-  }
-
-  // draw layout (simple grid) into canvas
-  function drawLayoutOnCanvas(rows, cols, distribution){
-    const canvas = document.getElementById('layoutCanvas');
-    const ctx = canvas.getContext('2d');
-    // responsive scaling
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0,0,w,h);
-    ctx.fillStyle = '#07101a';
-    ctx.fillRect(0,0,w,h);
-
-    // compute grid rows = distribution.length, cols = max per row maybe
-    const gridRows = distribution.length;
-    const maxCols = Math.max(...distribution);
-    // margins
-    const mx = 30, my = 30;
-    const usableW = w - mx*2;
-    const usableH = h - my*2;
-    const cellW = usableW / maxCols;
-    const cellH = usableH / gridRows;
-    const radius = Math.min(cellW, cellH) * 0.25;
-
-    // draw each row centered
-    ctx.fillStyle = '#00b4ff';
-    ctx.strokeStyle = '#036';
-    ctx.lineWidth = 2;
-    for(let r=0;r<gridRows;r++){
-      const count = distribution[r];
-      // compute startX so that row is centered
-      const rowWidth = count * cellW;
-      let startX = mx + (usableW - rowWidth)/2 + cellW/2;
-      const y = my + r*cellH + cellH/2;
-      for(let c=0;c<count;c++){
-        const x = startX + c*cellW;
-        // draw bulb circle
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI*2);
-        ctx.fill();
-        ctx.stroke();
-        // small glow
-        ctx.fillStyle = 'rgba(0,180,255,0.08)';
-        ctx.beginPath();
-        ctx.arc(x, y, radius*2.5, 0, Math.PI*2);
-        ctx.fill();
-        ctx.fillStyle = '#00b4ff';
-      }
-    }
-
-    // optional: draw dashed room border
-    ctx.strokeStyle = '#133';
-    ctx.setLineDash([6,6]);
-    ctx.strokeRect(mx/2, my/2, w-mx, h-my);
-    ctx.setLineDash([]);
-
-    // save dataURL for PDF usage
-    window.lastLayoutImage = canvas.toDataURL('image/png');
-  }
-
-  // ---------- MODE 2: dynamic sets ----------
-  function addLampSet(pref){
-    // pref optional {count, lampIndex}
-    const container = document.getElementById('setsContainer');
-    const idx = container.children.length;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'card-small set-item';
-    wrapper.dataset.idx = idx;
-    wrapper.innerHTML = `
-      <div class="grid-2">
-        <div>
-          <label>Jumlah Lampu</label>
-          <input type="number" class="set-count" value="${(pref && pref.count) || 1}" min="0" />
-        </div>
-        <div>
-          <label>Pilih Lampu</label>
-          <select class="set-lamp">
-            ${ LAMPS.map((l,i)=>`<option value="${i}" ${pref && pref.lampIndex==i ? 'selected':''}>${l.name} — ${l.watt}W · ${l.lumen}lm</option>`).join('') }
-          </select>
-        </div>
-        <div>
-          <label>Watt per Lampu (editable)</label>
-          <input type="number" class="set-watt" value="${(pref && pref.watt) || (LAMPS[(pref && pref.lampIndex) || 0].watt)}" />
-        </div>
-        <div style="align-self:end;">
-          <button class="btn outline" onclick="removeLampSet(this)">Hapus Set</button>
-        </div>
-      </div>
-      <div class="muted small">Total Watt: <span class="set-total-watt">0</span> W • Arus: <span class="set-amp">0</span> A</div>
-    `;
-    container.appendChild(wrapper);
-    // attach listeners
-    wrapper.querySelector('.set-lamp').addEventListener('change', (e)=>{
-      const sel = e.target;
-      const wattEl = wrapper.querySelector('.set-watt');
-      const lamp = LAMPS[parseInt(sel.value)];
-      wattEl.value = lamp.watt;
-      recalcSet(wrapper);
-    });
-    wrapper.querySelector('.set-count').addEventListener('input', ()=>recalcSet(wrapper));
-    wrapper.querySelector('.set-watt').addEventListener('input', ()=>recalcSet(wrapper));
-    recalcSet(wrapper);
-  }
-
-  function removeLampSet(btn){
-    const wrapper = btn.closest('.set-item');
-    wrapper.remove();
-  }
-
-  function recalcSet(wrapper){
-    const count = parseFloat(wrapper.querySelector('.set-count').value) || 0;
-    const watt = parseFloat(wrapper.querySelector('.set-watt').value) || 0;
-    const total = count * watt;
-    const amp = total / STD_VOLTAGE;
-    wrapper.querySelector('.set-total-watt').textContent = total.toFixed(1);
-    wrapper.querySelector('.set-amp').textContent = amp.toFixed(2);
-  }
-
-  // calculate mode 2 overall
-  function calculateMode2(){
-    // gather sets
-    const sets = Array.from(document.querySelectorAll('.set-item')).map(wrapper=>{
-      const count = parseFloat(wrapper.querySelector('.set-count').value) || 0;
-      const lampIndex = parseInt(wrapper.querySelector('.set-lamp').value);
-      const watt = parseFloat(wrapper.querySelector('.set-watt').value) || 0;
-      const totalWatt = count * watt;
-      const amp = totalWatt / STD_VOLTAGE;
-      return { count, lampIndex, watt, totalWatt, amp, lampName: LAMPS[lampIndex].name };
-    });
-
-    // KKK
-    const kkkCount = parseInt(document.getElementById('kkk_count').value) || 0;
-    const kkkVA = parseInt(document.getElementById('kkk_va').value) || 0;
-    const kkkTotalVA = kkkCount * kkkVA;
-
-    // total lamp power
-    const totalLampWatt = sets.reduce((s,x)=>s + x.totalWatt, 0);
-    const totalLampAmp = sets.reduce((s,x)=>s + x.amp, 0);
-    // total VA approx (lamp watt ~ VA for resistive loads)
-    const totalVA = totalLampWatt + kkkTotalVA;
-    const eta = parseFloat(document.getElementById('eta2').value) || 1;
-    const effectivePower = totalVA / eta;
-
-    // groups
-    const groups = Math.max(1, parseInt(document.getElementById('groupsCount').value) || 1);
-    const perGroupWatt = effectivePower / groups;
-
-    // recommend MCBs (simple table of common amps)
-    const mcbSizes1P = [6,10,16,20,25,32,40,50,63,80,100];
-    const mcbSizes3P = [10,16,20,25,32,40,50,63,80,100,125];
-
-    // recommend main MCB using single-phase assumption unless user picks 3P
-    const recommendedMain = pickMCB(perGroupWatt * groups, '1P', mcbSizes1P); // approximate
-
-    // per-group recommendation
-    const groupsArr = [];
-    for(let i=0;i<groups;i++){
-      const gW = perGroupWatt;
-      const gAmp = gW / STD_VOLTAGE;
-      const rec = pickMCB(gW, '1P', mcbSizes1P);
-      groupsArr.push({ group: i+1, watt: gW.toFixed(1), amp: gAmp.toFixed(2), recommendedMcb: rec });
-    }
-
-    // render summary
-    const outEl = document.getElementById('result2');
-    outEl.innerHTML = `
-      <h3>Ringkasan</h3>
-      <p>Total Daya Lampu: <b>${totalLampWatt.toFixed(1)} W</b></p>
-      <p>Total VA KKK: <b>${kkkTotalVA} VA</b></p>
-      <p>Total VA (sebelum efisiensi): <b>${totalVA.toFixed(1)} VA</b></p>
-      <p>Efisiensi: <b>${eta}</b> → Daya efektif: <b>${effectivePower.toFixed(1)} W</b></p>
-      <p>Rekomendasi MCB utama (perkiraan): <b>${recommendedMain}</b></p>
-      <hr/>
-      <h4>Detail Set Lampu</h4>
-      <table class="table">
-        <thead><tr><th>#</th><th>Jenis Lampu</th><th>Jumlah</th><th>Watt</th><th>Total W</th><th>Arus (A)</th></tr></thead>
-        <tbody>
-          ${sets.map((s,i)=>`<tr>
-            <td>${i+1}</td><td>${s.lampName}</td><td>${s.count}</td><td>${s.watt} W</td><td>${s.totalWatt.toFixed(1)}</td><td>${s.amp.toFixed(2)}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-
-      <h4>Distribusi Grup (${groups} grup)</h4>
-      <table class="table">
-        <thead><tr><th>Grup</th><th>Watt</th><th>Amp</th><th>Rekom. MCB</th></tr></thead>
-        <tbody>
-          ${groupsArr.map(g=>`<tr><td>${g.group}</td><td>${g.watt}</td><td>${g.amp}</td><td>${g.recommendedMcb}</td></tr>`).join('')}
-        </tbody>
-      </table>
-      <div class="muted small">Catatan: rekomendasi MCB adalah perkiraan; periksa faktor daya, In-r, dan type karakteristik (B/C/D) untuk pemasangan sesungguhnya.</div>
-    `;
-
-    // store last calculation
-    window.lastMode2 = { sets, kkkCount, kkkVA, totalLampWatt, kkkTotalVA, totalVA, effectivePower, groupsArr, recommendedMain };
-  }
-
-  function pickMCB(wattOrVa, phase='1P', sizes1P){
-    // convert to amps at 220V for 1P, at line 400V for 3P
-    const is3 = (phase === '3P');
-    let amp = wattOrVa / (is3 ? (Math.sqrt(3)*STD_LINE_VOLTAGE) : STD_VOLTAGE);
-    amp = amp * 1.25; // safety margin
-    const sizes = sizes1P;
-    for(let s of sizes){
-      if(s >= Math.ceil(amp)) return `${is3? '3P ':'1P '}${s}A`;
-    }
-    return `>${sizes[sizes.length-1]}A`;
-  }
-
-  // ---------- PDF download (send JSON to server) ----------
-  async function downloadPdfMode1(){
-    if(!window.lastCalc){ alert('Hitung dulu sebelum download.'); return; }
-    const payload = {
-      room: window.lastCalc.room.name,
-      lamp: window.lastCalc.lamp.name,
-      n_lamps: window.lastCalc.n_lamps,
-      total_lumen: window.lastCalc.total_lumen,
-      total_watt: window.lastCalc.total_watt,
-      total_amp: window.lastCalc.total_amp,
-      area: window.lastCalc.area,
-      eta: window.lastCalc.eta,
-      layout_image: window.lastLayoutImage // dataURL png, server must accept it if you want image in PDF
-    };
-    try{
-      const r = await fetch('/download_pdf_mode1', {
-        method:'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      });
-      if(!r.ok){
-        const text = await r.text();
-        alert('Gagal generate PDF: '+text);
-        return;
-      }
-      const blob = await r.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `laporan_mode1_${new Date().toISOString().replace(/[:.]/g,'')}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }catch(err){
-      alert('Error saat meminta PDF: '+err);
+  // Layout grid
+  const points=[]; 
+  const cols=Math.ceil(Math.sqrt(lampCount)); 
+  const rows=Math.ceil(lampCount/cols);
+  for(let r=0;r<rows;r++){
+    let rowCount=(r<rows-1)?cols:(lampCount-(cols*(rows-1)));
+    for(let c=0;c<rowCount;c++){
+      points.push({x:(c+1)*canvas.width/(cols+1), y:(r+1)*canvas.height/(rows+1)});
     }
   }
+  drawLayout(points);
+  if(rows*cols!==lampCount){warningEl.textContent="⚠ Jumlah lampu per baris tidak merata!";warningEl.classList.remove("hidden");}
 
-  // attach initial UI
-  (function init(){
-    // fill categories is done by Jinja
-    // pre-add one lamp set for Mode2
-    addLampSet({count:1, lampIndex:0});
-    // initial draw clear canvas
-    const canvas = document.getElementById('layoutCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#07101a';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-  })();
+  document.getElementById("resultMode1").textContent=
+`Ruangan: ${ruangan.name}
+Luas: ${area.toFixed(2)} m²
+Lux Standar: ${ruangan.lux} lx
+Lampu Pilihan: ${lamp.name} (${lamp.watt}W | ${lamp.lumen}lm)
+Jumlah Lampu: ${lampCount} buah
+Total Watt (VA): ${va} W
+Arus (A): ${arus.toFixed(2)} A`;
+});
 
-  </script>
+// ===== Mode 2 Dynamic Groups =====
+const groupsContainer=document.getElementById("groupsContainer");
+let groupCount=0;
+document.getElementById("addGroup").addEventListener("click",()=>{
+  groupCount++;
+  const groupDiv=document.createElement("div");
+  groupDiv.classList.add("card");
+  groupDiv.style.marginTop="15px";
+  groupDiv.id="group_"+groupCount;
+  groupDiv.innerHTML=`
+<h3>Grup Lampu ${groupCount}</h3>
+<div class="input-row">
+  <div>
+    <label>Jumlah Lampu</label>
+    <input type="number" class="lampQty" placeholder="Contoh: 5">
+  </div>
+  <div>
+    <label>Pilih Lampu</label>
+    <select class="lampType"><option value="" disabled selected>-- Pilih Lampu --</option></select>
+  </div>
+  <div>
+    <label>MCB Grup (A)</label>
+    <input type="number" class="mcbGroup" placeholder="Contoh: 10">
+  </div>
+</div>`;
 
-  <!-- minimal inline styles so file works even tanpa external CSS -->
-  <style>
-    :root{
-      --bg:#07101a; --card:#0b1220; --accent:#00b4ff; --muted:#8ea7b8;
-    }
-    body{ background:linear-gradient(180deg,#051018 0%, #071627 100%); color:#e6f7ff; font-family:Inter,system-ui,Segoe UI,Roboto; margin:0; }
-    .wrap{ max-width:1100px; margin:24px auto; padding:0 16px; }
-    header.site-header{ padding:22px 0; text-align:center; background:linear-gradient(90deg,#002e6b,#003f7a); box-shadow:0 6px 22px rgba(0,0,0,0.6); }
-    header h1{ margin:0; font-size:24px; color:#fff; }
-    header p.muted{ margin:6px 0 0; color:#cfeffd; opacity:0.9; }
+  // Populate lamp options
+  const sel=groupDiv.querySelector(".lampType");
+  LAMPS.forEach(l=>{let opt=document.createElement("option");opt.value=l.index;opt.textContent=l.name+" ["+l.watt+"W | "+l.lumen+"lm]";sel.appendChild(opt);});
+  groupsContainer.appendChild(groupDiv);
+});
 
-    .card{ background:var(--card); border-radius:12px; padding:18px; margin:18px 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
-    .mode-select{ text-align:center; }
-    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:end; }
-    label{ display:block; margin-bottom:6px; color:var(--accent); font-weight:600; }
-    select,input{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:#08121a; color:#e6f7ff; }
-    .btn{ padding:10px 12px; border-radius:8px; cursor:pointer; border:none; background:rgba(255,255,255,0.03); color:#e6f7ff; }
-    .btn.primary{ background:var(--accent); color:#041323; font-weight:700; }
-    .btn.outline{ background:transparent; border:1px solid rgba(255,255,255,0.06); }
-    .result-block{ margin-top:12px; padding:12px; background:#081826; border-radius:8px; }
-    .muted{ color:#86c9e8; opacity:0.8; }
-    .small{ font-size:12px; }
-    .card-small{ background:#071827; padding:10px; border-radius:8px; }
-    .canvas-wrap{ margin-top:12px; }
-    table.table{ width:100%; border-collapse:collapse; color:#e6f7ff; margin-top:10px;}
-    table.table th, table.table td{ padding:8px; border-bottom:1px solid rgba(255,255,255,0.03); text-align:left; }
-    .hidden{ display:none; }
-    @media(max-width:900px){ .grid-2{ grid-template-columns:1fr; } }
-  </style>
+// ===== Mode 2 Calculation =====
+document.getElementById("calcMode2").addEventListener("click",()=>{
+  const kkkCount=parseInt(document.getElementById("kkkCount").value);
+  const phase=document.getElementById("mcbType").value;
+  const eta=parseFloat(document.getElementById("effMode2").value);
+  if(isNaN(kkkCount)||kkkCount<1){alert("Isi jumlah KKK valid!");return;}
+  if(groupCount<1){alert("Tambahkan minimal 1 grup lampu!");return;}
+  const results=[];
+  let totalVA=0, totalAmps=0;
+  for(let i=1;i<=groupCount;i++){
+    const grp=document.getElementById("group_"+i);
+    const qty=parseInt(grp.querySelector(".lampQty").value);
+    const lampIdx=parseInt(grp.querySelector(".lampType").value);
+    const mcb=parseFloat(grp.querySelector(".mcbGroup").value);
+    if(isNaN(qty)||isNaN(lampIdx)||isNaN(mcb)){alert("Isi semua field Grup "+i+"!");return;}
+    const lamp=LAMPS.find(l=>l.index==lampIdx);
+    const va=(lamp.watt*qty)/eta;
+    const arus=va/220;
+    totalVA+=va; totalAmps+=arus;
+    results.push({grup:i,lamp:lamp.name,qty:qty,va:va.toFixed(2),amp:arus.toFixed(2),mcb:mcb});
+  }
+
+  // Generate table
+  let html=<table><tr><th>Grup</th><th>Lampu</th><th>Jumlah</th><th>VA</th><th>Arus (A)</th><th>MCB Grup (A)</th></tr>;
+  results.forEach(r=>{html+=<tr><td>${r.grup}</td><td>${r.lamp}</td><td>${r.qty}</td><td>${r.va}</td><td>${r.amp}</td><td>${r.mcb}</td></tr>;});
+  // MCB Utama
+  let mcbMain=0;
+  if(phase==="1phase"){mcbMain=Math.ceil(totalAmps);}
+  else{mcbMain=Math.ceil(totalAmps/3);}
+  html+=<tr><th colspan="3">Total</th><th>${totalVA.toFixed(2)} VA</th><th>${totalAmps.toFixed(2)} A</th><th>MCB Utama: ${mcbMain} A</th></tr></table>;
+  document.getElementById("resultMode2").innerHTML=html;
+});
+</script>
 </body>
 </html>
