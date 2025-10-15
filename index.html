@@ -384,44 +384,224 @@ document.getElementById("calcMode1").onclick=()=>{
 };
 document.getElementById("reset1").onclick=()=>{document.querySelectorAll("#mode1 input, #mode1 select").forEach(i=>i.value="");document.getElementById("lampLayout").innerHTML="";document.getElementById("resultMode1").textContent="";};
 
-// ===== MODE 2 =====
-const groupsContainer=document.getElementById("groupsContainer");
-let groupCount=0;
-document.getElementById("addGroup").onclick=()=>{
-  groupCount++;
-  const div=document.createElement("div");
-  div.className="card";
-  div.innerHTML=`<strong>Grup ${groupCount}</strong>
-  <div class="grid-2">
-  <div><label>Jumlah Lampu</label><input type="number" class="jumlah" value="1"></div>
-  <div><label>Pilih Lampu</label><select class="lamp"></select></div>
-  <div><label>Efisiensi η</label><input type="number" class="eta" value="0.8" step="0.01"></div>
-  <div><button class="btn outline remove">❌ Hapus</button></div></div>`;
-  const sel=div.querySelector(".lamp");
-  LAMPS.forEach(l=>{const o=document.createElement("option");o.value=l.index;o.textContent=l.name;sel.appendChild(o);});
-  div.querySelector(".remove").onclick=()=>div.remove();
-  groupsContainer.appendChild(div);
-};
+<script>
+// ===== MODE 2 (FINAL VERSION) =====
+const groupsContainer = document.getElementById('groupsContainer');
+const calcMode2Btn = document.getElementById('calcMode2');
+const resultTableBody = document.querySelector('#resultTable tbody');
+const resultMode2 = document.getElementById('resultMode2');
 
-document.getElementById("calcMode2").onclick=()=>{
-  const rows=[];
-  let totalW=0,totalVA=0,totalA=0;
-  groupsContainer.querySelectorAll(".card").forEach((grp,i)=>{
-    const jml=parseFloat(grp.querySelector(".jumlah").value);
-    const lamp=LAMPS.find(l=>l.index==parseInt(grp.querySelector(".lamp").value));
-    const eta=parseFloat(grp.querySelector(".eta").value);
-    const watt=jml*lamp.watt;
-    const VA=watt/eta;
-    const A=watt/220;
-    totalW+=watt; totalVA+=VA; totalA+=A;
-    const mcb=A<=6?6:A<=10?10:A<=16?16:A<=20?20:A<=25?25:32;
-    rows.push(`<tr><td>Grup ${i+1}</td><td>${jml}</td><td>${lamp.name}</td><td>${watt}</td><td>${VA.toFixed(2)}</td><td>${A.toFixed(2)}</td><td>${mcb}A</td></tr>`);
+// === Tambahkan kontrol sistem fase ===
+const sysSelector = document.createElement('div');
+sysSelector.style.marginBottom = "15px";
+sysSelector.innerHTML = `
+  <label><b>Sistem Listrik:</b></label>
+  <select id="sistemListrik" style="padding:8px;border-radius:8px;border:1px solid #ccc;margin-left:10px">
+    <option value="1">1 Fase (220V)</option>
+    <option value="3">3 Fase (380V)</option>
+  </select>
+  <button id="addGroup" class="btn outline" style="margin-left:12px;">➕ Tambah Grup</button>
+  <button id="addExample" class="btn outline">✨ Tambah Grup Contoh</button>
+`;
+groupsContainer.parentNode.insertBefore(sysSelector, groupsContainer);
+
+let grpIdCounter = 0;
+
+function recommendMCB(amp) {
+  const sizes = [2,4,6,10,16,20,25,32,40,50,63,80,100];
+  for (const s of sizes) if (amp <= s * 0.8) return s;
+  return sizes[sizes.length - 1];
+}
+
+function makeLampOptionsHTML() {
+  return LAMPS.map(l => `<option value="${l.index}">${l.name} [${l.watt}W]</option>`).join('');
+}
+
+function createGroupCard() {
+  grpIdCounter++;
+  const id = grpIdCounter;
+  const card = document.createElement('div');
+  card.className = 'card mode2-group';
+  card.dataset.gid = id;
+  card.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <strong>Grup ${id}</strong>
+      <div style="display:flex;gap:8px">
+        <button class="btn outline add-lamp">➕ Lampu</button>
+        <button class="btn outline add-kkk">➕ KKK (VA)</button>
+        <button class="btn outline remove-group">🗑 Hapus Grup</button>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:10px">
+      <div>
+        <label>Power Factor (PF)</label>
+        <input type="number" class="g_pf" step="0.01" min="0.5" max="1" value="0.95">
+      </div>
+      <div>
+        <label>Derating / Margin (%)</label>
+        <input type="number" class="g_derate" min="0" max="50" step="1" value="10">
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div class="lamp-rows"></div>
+      <div class="kkk-rows" style="margin-top:8px"></div>
+    </div>
+
+    <div style="margin-top:10px" class="tiny">Hasil Grup: <span class="group-summary">-</span></div>
+  `;
+  groupsContainer.appendChild(card);
+
+  card.querySelector('.add-lamp').addEventListener('click', ()=> addLampRow(card));
+  card.querySelector('.add-kkk').addEventListener('click', ()=> addKKKRow(card));
+  card.querySelector('.remove-group').addEventListener('click', ()=> { if(confirm('Hapus grup ini?')) card.remove(); });
+  return card;
+}
+
+function addLampRow(card, defaultQty=1, defaultLampIndex=0) {
+  const rows = card.querySelector('.lamp-rows');
+  const row = document.createElement('div');
+  row.className = 'lamp-row';
+  row.style.cssText = 'display:flex;gap:8px;margin-top:8px';
+  row.innerHTML = `
+    <div style="flex:0 0 120px">
+      <label style="font-weight:600;font-size:0.85rem;margin-bottom:4px;display:block">Qty</label>
+      <input type="number" class="lamp-qty" value="${defaultQty}" min="1" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd">
+    </div>
+    <div style="flex:1">
+      <label style="font-weight:600;font-size:0.85rem;margin-bottom:4px;display:block">Pilih Lampu</label>
+      <select class="lamp-type" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd">
+        ${makeLampOptionsHTML()}
+      </select>
+    </div>
+    <div style="flex:0 0 80px;display:flex;align-items:end;justify-content:flex-end">
+      <button class="btn outline remove-lamp">Hapus</button>
+    </div>
+  `;
+  rows.appendChild(row);
+  const sel = row.querySelector('.lamp-type');
+  sel.value = defaultLampIndex;
+  row.querySelector('.remove-lamp').addEventListener('click', ()=> row.remove());
+  return row;
+}
+
+function addKKKRow(card, defaultLabel='Peralatan', defaultVA=100) {
+  const rows = card.querySelector('.kkk-rows');
+  const row = document.createElement('div');
+  row.className = 'kkk-row';
+  row.style.cssText = 'display:flex;gap:8px;margin-top:8px';
+  row.innerHTML = `
+    <div style="flex:1">
+      <label style="font-weight:600;font-size:0.85rem;margin-bottom:4px;display:block">Nama KKK</label>
+      <input type="text" class="kkk-label" value="${defaultLabel}" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd">
+    </div>
+    <div style="flex:0 0 140px">
+      <label style="font-weight:600;font-size:0.85rem;margin-bottom:4px;display:block">VA</label>
+      <input type="number" class="kkk-va" value="${defaultVA}" min="0" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd">
+    </div>
+    <div style="flex:0 0 80px;display:flex;align-items:end;justify-content:flex-end">
+      <button class="btn outline remove-kkk">Hapus</button>
+    </div>
+  `;
+  rows.appendChild(row);
+  row.querySelector('.remove-kkk').addEventListener('click', ()=> row.remove());
+  return row;
+}
+
+// Tombol Tambah Grup
+document.getElementById('addGroup').addEventListener('click', ()=>{
+  const card = createGroupCard();
+  addLampRow(card,1,0);
+  addKKKRow(card,'Contoh KKK',100);
+});
+
+// Tombol Tambah Grup Contoh
+document.getElementById('addExample').addEventListener('click', ()=>{
+  const card = createGroupCard();
+  addLampRow(card, 2, Math.floor(Math.random()*LAMPS.length));
+  addLampRow(card, 1, Math.floor(Math.random()*LAMPS.length));
+  addKKKRow(card, 'Pompa Air', 300 + Math.floor(Math.random()*200));
+  alert('Grup contoh telah ditambahkan ✨');
+});
+
+// Tombol Hitung
+calcMode2Btn.addEventListener('click', ()=>{
+  resultTableBody.innerHTML = '';
+  resultMode2.textContent = '';
+
+  const sistem = document.getElementById('sistemListrik').value;
+  const V = sistem === '3' ? 380 : 220;
+  const groupCards = Array.from(groupsContainer.querySelectorAll('.mode2-group'));
+  if (groupCards.length === 0) return alert('Tambahkan minimal satu grup.');
+
+  let grandW=0, grandVA=0, grandA=0;
+
+  groupCards.forEach((card, i)=>{
+    const pf = parseFloat(card.querySelector('.g_pf').value)||0.95;
+    const der = parseFloat(card.querySelector('.g_derate').value)||0;
+
+    const lampRows = Array.from(card.querySelectorAll('.lamp-row'));
+    let wLamp=0, vaLamp=0, nLamp=0;
+    lampRows.forEach(l=>{
+      const qty = parseFloat(l.querySelector('.lamp-qty').value)||0;
+      const idx = parseInt(l.querySelector('.lamp-type').value);
+      const lamp = LAMPS.find(x=>x.index===idx);
+      if(!lamp) return;
+      nLamp += qty;
+      const w = lamp.watt * qty;
+      wLamp += w;
+      vaLamp += w / pf;
+    });
+
+    const kkkRows = Array.from(card.querySelectorAll('.kkk-row'));
+    let vaKKK = 0;
+    kkkRows.forEach(k=>{
+      const v = parseFloat(k.querySelector('.kkk-va').value)||0;
+      vaKKK += v;
+    });
+
+    const totalVA = (vaLamp + vaKKK) * (1+der/100);
+    const I = sistem === '3' ? totalVA / (Math.sqrt(3)*V) : totalVA / V;
+    const mcb = recommendMCB(I);
+
+    grandW += wLamp;
+    grandVA += totalVA;
+    grandA += I;
+
+    card.querySelector('.group-summary').textContent =
+      `Lampu: ${nLamp}, Watt: ${wLamp.toFixed(1)}, VA KKK: ${vaKKK}, Total VA: ${totalVA.toFixed(1)}, Arus: ${I.toFixed(2)} A, MCB: ${mcb}A`;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>Grup ${i+1}</td>
+      <td>${nLamp}</td>
+      <td>${vaKKK}</td>
+      <td>${wLamp.toFixed(1)}</td>
+      <td>${vaLamp.toFixed(1)}</td>
+      <td>${totalVA.toFixed(1)}</td>
+      <td>${I.toFixed(2)}</td>
+      <td>${mcb}A</td>
+    `;
+    resultTableBody.appendChild(tr);
   });
-  document.querySelector("#resultTable tbody").innerHTML=rows.join("")+`<tr><th colspan=3>Total</th><th>${totalW}</th><th>${totalVA.toFixed(2)}</th><th>${totalA.toFixed(2)}</th><th>-</th></tr>`;
-  document.getElementById("resultMode2").textContent=`Total Daya: ${totalW}W | Total Arus: ${totalA.toFixed(2)}A | MCB Utama: ${totalA<=6?6:totalA<=10?10:totalA<=16?16:totalA<=20?20:totalA<=25?25:32}A`;
-};
 
-document.getElementById("year").textContent=new Date().getFullYear();
+  const footer = document.createElement('tr');
+  footer.innerHTML = `<th colspan="3">TOTAL</th>
+    <th>${grandW.toFixed(1)} W</th>
+    <th>-</th>
+    <th>${grandVA.toFixed(1)} VA</th>
+    <th>${grandA.toFixed(2)} A</th>
+    <th>${recommendMCB(grandA)}A</th>`;
+  resultTableBody.appendChild(footer);
+
+  resultMode2.innerHTML = `
+    Sistem: ${sistem==='3'?'3 Fase (380V)':'1 Fase (220V)'}<br>
+    Total Watt: ${grandW.toFixed(1)} W<br>
+    Total VA: ${grandVA.toFixed(1)} VA<br>
+    Total Arus: ${grandA.toFixed(2)} A<br>
+    Rekomendasi MCB Utama: ${recommendMCB(grandA)} A
+  `;
+});
 </script>
-</body>
-</html>
+
