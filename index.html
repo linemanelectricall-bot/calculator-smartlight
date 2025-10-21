@@ -381,14 +381,15 @@ document.getElementById('calcMode1').addEventListener('click', ()=>{
   }
 
   resultMode1.textContent =
-`Ruangan : ${room.name}
+`Ruangan : ${room.Key}
 Luas    : ${area.toFixed(2)} m²
 Lux     : ${room.lux} lx
 Lampu   : ${lamp.name}
 Jumlah  : ${lampCount} pcs
 Total Watt : ${totalWatt} W
 Arus       : ${arus.toFixed(2)} A
-Hasil penghiitungan ini dilakukan berdasarkan PUIL & SNI`;
+Hasil penghiitungan ini sudah di sesuaikan
+berdasarkan PUIL & SNI`;
 });
 
 document.getElementById('reset1').addEventListener('click', ()=>{
@@ -490,7 +491,7 @@ function addGroup(initialData){
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
           <button class="btn outline kecil btn-remove-row-kkk">Hapus Baris</button>
-          <div class="small-muted">Total VA (Part 2)</div>
+          <div class="small-muted">Total VA</div>
         </div>
       </div>
     `);
@@ -553,7 +554,7 @@ exportJSONBtn.addEventListener('click', ()=>{
 
 /* calcMode2 currently placeholder (Part 2 will replace with full logic) */
 document.getElementById('calcMode2').addEventListener('click', ()=>{
-  alert('Perhitungan Mode 2 (agregasi VA, arus, dan rekomendasi MCB 1P/3P) akan diaktifkan di PART 2.\n\nSaat ini UI sudah siap: kamu bisa tambah grup, lampu, dan KKK. Klik Export JSON untuk melihat data grup.');
+  alert('Perhitungan Mode 2 (agregasi VA, arus, dan rekomendasi MCB 1P/3P).\n\nSaat ini UI sudah siap: kamu bisa tambah grup, lampu, dan KKK. Klik Export JSON untuk melihat data grup.');
 });
 
 /* If you want, add an initial sample group so UI doesn't look empty */
@@ -564,7 +565,7 @@ addGroup({
 });
 
 /* =======================
-   End of Part 1
+   End of
    ======================= */
 </script>
 </body>
@@ -761,4 +762,5 @@ if(document.querySelectorAll('.group-card').length === 0){
 
 </script>
 <!-- ===== END PART 2 ===== -->
+
 
