@@ -190,46 +190,46 @@ th{background:linear-gradient(90deg,var(--primary-2),var(--primary));color:#fff}
    Data (Rooms & Lamps)
    ======================= */
 const ROOMS = [
-  {key:"teras_rumah", name:"Teras (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal.", lux:100},
-  {key:"ruang_tamu", name:"Ruang Tamu (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal.", lux:150},
-  {key:"kamar_tidur", name:"Kamar Tidur (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal.", lux:150},
+  {key:"teras rumah", name:"Teras (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal.", lux:100},
+  {key:"ruang tamu", name:"Ruang Tamu (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal.", lux:150},
+  {key:"kamar tidur", name:"Kamar Tidur (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal.", lux:150},
   {key:"dapur", name:"Dapur (Rumah Tinggal). lux: 250", kategori:"Rumah Tinggal.", lux:250},
   {key:"garasi", name:"Garasi (Rumah Tinggal). lux: 75", kategori:"Rumah Tinggal.", lux:75},
-  {key:"koridor_rumah", name:"Koridor (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal.", lux:100},
+  {key:"koridor rumah", name:"Koridor (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal.", lux:100},
 
-  {key:"ruang_rapat", name:"Ruang Rapat (Perkantoran). lux: 300", kategori:"Perkantoran.", lux:300},
-  {key:"ruang_direktur", name:"Ruang Direktur (Perkantoran). lux: 350", kategori:"Perkantoran.", lux:350},
-  {key:"open_office", name:"Open Office (Perkantoran). lux: 350", kategori:"Perkantoran.", lux:350},
-  {key:"ruang_komputer", name:"Ruang Komputer (Perkantoran). lux: 500", kategori:"Perkantoran.", lux:500},
+  {key:"ruang rapat", name:"Ruang Rapat (Perkantoran). lux: 300", kategori:"Perkantoran.", lux:300},
+  {key:"ruang direktur", name:"Ruang Direktur (Perkantoran). lux: 350", kategori:"Perkantoran.", lux:350},
+  {key:"open office", name:"Open Office (Perkantoran). lux: 350", kategori:"Perkantoran.", lux:350},
+  {key:"ruang komputer", name:"Ruang Komputer (Perkantoran). lux: 500", kategori:"Perkantoran.", lux:500},
   {key:"resepsionis", name:"Resepsionis (Perkantoran). lux: 300", kategori:"Perkantoran.", lux:300},
 
   {key:"kelas", name:"Ruang Kelas (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan.", lux:300},
-  {key:"lab_komputer", name:"Laboratorium Komputer (Lembaga Pendidikan). lux: 500", kategori:"Lembaga Pendidikan.", lux:500},
+  {key:"lab komputer", name:"Laboratorium Komputer (Lembaga Pendidikan). lux: 500", kategori:"Lembaga Pendidikan.", lux:500},
   {key:"perpustakaan", name:"Perpustakaan (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan.", lux:300},
-  {key:"ruang_gambar", name:"Ruang Gambar (Lembaga Pendidikan). lux: 750", kategori:"Lembaga Pendidikan.", lux:750},
+  {key:"ruang gambar", name:"Ruang Gambar (Lembaga Pendidikan). lux: 750", kategori:"Lembaga Pendidikan.", lux:750},
 
-  {key:"kamar_hotel", name:"Kamar Hotel (Hotel & Restoran). lux: 150", kategori:"Hotel & Restoran.", lux:150},
-  {key:"lobi_hotel", name:"Lobi Hotel (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran.", lux:200},
-  {key:"ruang_makan", name:"Ruang Makan (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran.", lux:200},
-  {key:"dapur_restoran", name:"Dapur Restoran (Hotel & Restoran). lux: 500", kategori:"Hotel & Restoran.", lux:500},
+  {key:"kamar hotel", name:"Kamar Hotel (Hotel & Restoran). lux: 150", kategori:"Hotel & Restoran.", lux:150},
+  {key:"lobi hotel", name:"Lobi Hotel (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran.", lux:200},
+  {key:"ruang makan", name:"Ruang Makan (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran.", lux:200},
+  {key:"dapur restoran", name:"Dapur Restoran (Hotel & Restoran). lux: 500", kategori:"Hotel & Restoran.", lux:500},
 
-  {key:"ruang_operasi", name:"Ruang Operasi (Rumah Sakit). lux: 1000", kategori:"Rumah Sakit.", lux:1000},
+  {key:"ruang operasi", name:"Ruang Operasi (Rumah Sakit). lux: 1000", kategori:"Rumah Sakit.", lux:1000},
   {key:"icu", name:"ICU (Rumah Sakit). lux: 300", kategori:"Rumah Sakit.", lux:300},
-  {key:"rawat_inap", name:"Ruang Rawat Inap (Rumah Sakit). lux: 200", kategori:"Rumah Sakit.", lux:200},
-  {key:"lab_klinik", name:"Laboratorium Klinik (Rumah Sakit). lux: 750", kategori:"Rumah Sakit.", lux:750},
+  {key:"rawat inap", name:"Ruang Rawat Inap (Rumah Sakit). lux: 200", kategori:"Rumah Sakit.", lux:200},
+  {key:"lab klinik", name:"Laboratorium Klinik (Rumah Sakit). lux: 750", kategori:"Rumah Sakit.", lux:750},
 
-  {key:"produksi_kasar", name:"Produksi Kasar (Industri). lux: 200", kategori:"Industri.", lux:200},
-  {key:"perakitan_presisi", name:"Perakitan Presisi (Industri). lux: 1000", kategori:"Industri.", lux:1000},
+  {key:"produksi kasar", name:"Produksi Kasar (Industri). lux: 200", kategori:"Industri.", lux:200},
+  {key:"perakitan presisi", name:"Perakitan Presisi (Industri). lux: 1000", kategori:"Industri.", lux:1000},
   {key:"gudang", name:"Gudang (Industri). lux: 150", kategori:"Industri.", lux:150},
-  {key:"ruang_kontrol", name:"Ruang Kontrol (Industri). lux: 500", kategori:"Industri.", lux:500},
+  {key:"ruang kontrol", name:"Ruang Kontrol (Industri). lux: 500", kategori:"Industri.", lux:500},
 
   {key:"supermarket", name:"Supermarket (Pertokoan & Mall). lux: 750", kategori:"Pertokoan & Mall.", lux:750},
   {key:"etalase", name:"Etalase / Display (Pertokoan & Mall). lux: 1000", kategori:"Pertokoan & Mall.", lux:1000},
-  {key:"area_kasir", name:"Area Kasir (Pertokoan & Mall). lux: 500", kategori:"Pertokoan & Mall.", lux:500},
+  {key:"area kasir", name:"Area Kasir (Pertokoan & Mall). lux: 500", kategori:"Pertokoan & Mall.", lux:500},
   {key:"foodcourt", name:"Foodcourt (Pertokoan & Mall). lux: 300", kategori:"Pertokoan & Mall.", lux:300},
 
-  {key:"jalan_utama", name:"Jalan Utama (Outdoor). lux: 20", kategori:"Jalan & Transportasi.", lux:20},
-  {key:"jalan_lingkungan", name:"Jalan Lingkungan (Outdoor). lux: 10", kategori:"Jalan & Transportasi.", lux:10},
+  {key:"jalan utama", name:"Jalan Utama (Outdoor). lux: 20", kategori:"Jalan & Transportasi.", lux:20},
+  {key:"jalan lingkungan", name:"Jalan Lingkungan (Outdoor). lux: 10", kategori:"Jalan & Transportasi.", lux:10},
   {key:"terminal", name:"Terminal (Jalan & Transportasi). lux: 150", kategori:"Jalan & Transportasi.", lux:150},
   {key:"bandara", name:"Bandara / Ruang Tunggu (Jalan & Transportasi). lux: 300", kategori:"Jalan & Transportasi.", lux:300}
 ];
@@ -762,6 +762,7 @@ if(document.querySelectorAll('.group-card').length === 0){
 
 </script>
 <!-- ===== END PART 2 ===== -->
+
 
 
 
