@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Smart Lighting Planner — Part 1</title>
+<title>Smart Lighting Planner</title>
 <style>
 :root{
   --primary:#00aaff;
@@ -65,8 +65,8 @@ th{background:linear-gradient(90deg,var(--primary-2),var(--primary));color:#fff}
 </head>
 <body>
   <header class="header">
-    <h1>Smart Lighting Planner Premium</h1>
-    <p>Mode 1 — Pengaturan lampu & layout. Mode 2 — Grup Lampu + KKK (desain upgrade).</p>
+    <h1>Smart Lighting Planner</h1>
+    <p>Hitung kebutuhan pencahayaan ruangan dengan cepat & hitung total daya Lampu & KKK dengan cepat.</p>
     <button id="toggleDark" class="toggle-dark" title="Toggle dark mode">🌙</button>
   </header>
 
@@ -74,12 +74,12 @@ th{background:linear-gradient(90deg,var(--primary-2),var(--primary));color:#fff}
     <!-- MODE SWITCH -->
     <div class="card" style="display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap">
       <div style="display:flex;gap:8px;align-items:center">
-        <button id="btnMode1" class="btn primary">Mode 1 — Lampu</button>
-        <button id="btnMode2" class="btn ghost">Mode 2 — KKK & MCB</button>
-        <span class="small-muted">Part 1 (UI & struktur). Part 2 akan berisi logika perhitungan Mode 2.</span>
+        <button id="btnMode1" class="btn primary">Lampu per titik</button>
+        <button id="btnMode2" class="btn ghost">KKK & lampu. MCB</button>
+        <span class="small-muted">Pilih salah satu untuk menentukan titik lampu atau total daya lampu & KKK -_-</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <span class="badge">v1.0 — Part 1</span>
+        <span class="badge">v1.0</span>
         <img src="" id="logoFooterSmall" alt="" style="height:30px;opacity:.9;display:none">
       </div>
     </div>
@@ -130,8 +130,8 @@ th{background:linear-gradient(90deg,var(--primary-2),var(--primary));color:#fff}
     <section id="mode2" class="card" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
         <div style="display:flex;gap:8px;align-items:center">
-          <button id="addGroupBtn" class="btn primary">➕ Tambah Grup</button>
-          <button id="clearGroups" class="btn" style="border:1px solid var(--border)">🗑 Bersihkan Semua</button>
+          <button id="addGroupBtn" class="btn primary">Tambah Grup</button>
+          <button id="clearGroups" class="btn" style="border:1px solid var(--border)">Bersihkan Semua</button>
           <span class="small-muted">Setiap grup bisa memiliki beberapa baris Lampu dan KKK.</span>
         </div>
         <div style="display:flex;gap:8px;align-items:center">
@@ -149,12 +149,12 @@ th{background:linear-gradient(90deg,var(--primary-2),var(--primary));color:#fff}
       <div id="groupsContainer"></div>
 
       <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <button id="calcMode2" class="btn primary">Hitung Mode 2 (Part 2 akan aktifkan logika)</button>
+        <button id="calcMode2" class="btn primary">Hitung </button>
         <button id="exportJSON" class="btn ghost">Export JSON</button>
-        <div id="calcNote" class="small-muted">(Perhitungan lengkap Mode 2: akan tersedia di Part 2.)</div>
+        <div id="calcNote" class="small-muted">(^_^)</div>
       </div>
 
-      <div id="resultMode2" class="result-block" style="min-height:80px;margin-top:12px">Hasil Mode 2 akan tampil di sini setelah Part 2 (logika) dimuat.</div>
+      <div id="resultMode2" class="result-block" style="min-height:80px;margin-top:12px">Hasil.</div>
 
       <div class="table-wrap" style="margin-top:12px">
         <table id="resultTable">
@@ -180,7 +180,7 @@ th{background:linear-gradient(90deg,var(--primary-2),var(--primary));color:#fff}
     <footer class="footer card">
       <div style="display:flex;justify-content:center;gap:12px;align-items:center;flex-wrap:wrap">
         <div>&copy; <span id="year"></span> by <strong>@bah</strong></div>
-        <div class="small-muted">Logo & mode lengkap akan tersedia di Part 2.</div>
+        <div class="small-muted"></div>
       </div>
     </footer>
   </main>
@@ -190,48 +190,48 @@ th{background:linear-gradient(90deg,var(--primary-2),var(--primary));color:#fff}
    Data (Rooms & Lamps)
    ======================= */
 const ROOMS = [
-  {key:"teras_rumah", name:"Teras (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal. lux:100", lux:100},
-  {key:"ruang_tamu", name:"Ruang Tamu (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal. lux:150", lux:150},
-  {key:"kamar_tidur", name:"Kamar Tidur (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal. lux:150", lux:150},
-  {key:"dapur", name:"Dapur (Rumah Tinggal). lux: 250", kategori:"Rumah Tinggal. lux:250", lux:250},
-  {key:"garasi", name:"Garasi (Rumah Tinggal). lux: 75", kategori:"Rumah Tinggal. lux:75", lux:75},
-  {key:"koridor_rumah", name:"Koridor (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal. lux:100", lux:100},
+  {key:"teras_rumah", name:"Teras (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal.", lux:100},
+  {key:"ruang_tamu", name:"Ruang Tamu (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal.", lux:150},
+  {key:"kamar_tidur", name:"Kamar Tidur (Rumah Tinggal). lux: 150", kategori:"Rumah Tinggal.", lux:150},
+  {key:"dapur", name:"Dapur (Rumah Tinggal). lux: 250", kategori:"Rumah Tinggal.", lux:250},
+  {key:"garasi", name:"Garasi (Rumah Tinggal). lux: 75", kategori:"Rumah Tinggal.", lux:75},
+  {key:"koridor_rumah", name:"Koridor (Rumah Tinggal). lux: 100", kategori:"Rumah Tinggal.", lux:100},
 
-  {key:"ruang_rapat", name:"Ruang Rapat (Perkantoran). lux: 300", kategori:"Perkantoran. lux:300", lux:300},
-  {key:"ruang_direktur", name:"Ruang Direktur (Perkantoran). lux: 350", kategori:"Perkantoran. lux:350", lux:350},
-  {key:"open_office", name:"Open Office (Perkantoran). lux: 350", kategori:"Perkantoran. lux:350", lux:350},
-  {key:"ruang_komputer", name:"Ruang Komputer (Perkantoran). lux: 500", kategori:"Perkantoran. lux:500", lux:500},
-  {key:"resepsionis", name:"Resepsionis (Perkantoran). lux: 300", kategori:"Perkantoran. lux:300", lux:300},
+  {key:"ruang_rapat", name:"Ruang Rapat (Perkantoran). lux: 300", kategori:"Perkantoran.", lux:300},
+  {key:"ruang_direktur", name:"Ruang Direktur (Perkantoran). lux: 350", kategori:"Perkantoran.", lux:350},
+  {key:"open_office", name:"Open Office (Perkantoran). lux: 350", kategori:"Perkantoran.", lux:350},
+  {key:"ruang_komputer", name:"Ruang Komputer (Perkantoran). lux: 500", kategori:"Perkantoran.", lux:500},
+  {key:"resepsionis", name:"Resepsionis (Perkantoran). lux: 300", kategori:"Perkantoran.", lux:300},
 
-  {key:"kelas", name:"Ruang Kelas (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan. lux:300", lux:300},
-  {key:"lab_komputer", name:"Laboratorium Komputer (Lembaga Pendidikan). lux: 500", kategori:"Lembaga Pendidikan. lux:500", lux:500},
-  {key:"perpustakaan", name:"Perpustakaan (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan. lux:300", lux:300},
-  {key:"ruang_gambar", name:"Ruang Gambar (Lembaga Pendidikan). lux: 750", kategori:"Lembaga Pendidikan. lux:750", lux:750},
+  {key:"kelas", name:"Ruang Kelas (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan.", lux:300},
+  {key:"lab_komputer", name:"Laboratorium Komputer (Lembaga Pendidikan). lux: 500", kategori:"Lembaga Pendidikan.", lux:500},
+  {key:"perpustakaan", name:"Perpustakaan (Lembaga Pendidikan). lux: 300", kategori:"Lembaga Pendidikan.", lux:300},
+  {key:"ruang_gambar", name:"Ruang Gambar (Lembaga Pendidikan). lux: 750", kategori:"Lembaga Pendidikan.", lux:750},
 
-  {key:"kamar_hotel", name:"Kamar Hotel (Hotel & Restoran). lux: 150", kategori:"Hotel & Restoran. lux:150", lux:150},
-  {key:"lobi_hotel", name:"Lobi Hotel (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran. lux:200", lux:200},
-  {key:"ruang_makan", name:"Ruang Makan (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran. lux:200", lux:200},
-  {key:"dapur_restoran", name:"Dapur Restoran (Hotel & Restoran). lux: 500", kategori:"Hotel & Restoran. lux:500", lux:500},
+  {key:"kamar_hotel", name:"Kamar Hotel (Hotel & Restoran). lux: 150", kategori:"Hotel & Restoran.", lux:150},
+  {key:"lobi_hotel", name:"Lobi Hotel (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran.", lux:200},
+  {key:"ruang_makan", name:"Ruang Makan (Hotel & Restoran). lux: 200", kategori:"Hotel & Restoran.", lux:200},
+  {key:"dapur_restoran", name:"Dapur Restoran (Hotel & Restoran). lux: 500", kategori:"Hotel & Restoran.", lux:500},
 
-  {key:"ruang_operasi", name:"Ruang Operasi (Rumah Sakit). lux: 1000", kategori:"Rumah Sakit. lux:1000", lux:1000},
-  {key:"icu", name:"ICU (Rumah Sakit). lux: 300", kategori:"Rumah Sakit. lux:300", lux:300},
-  {key:"rawat_inap", name:"Ruang Rawat Inap (Rumah Sakit). lux: 200", kategori:"Rumah Sakit. lux:200", lux:200},
-  {key:"lab_klinik", name:"Laboratorium Klinik (Rumah Sakit). lux: 750", kategori:"Rumah Sakit. lux:750", lux:750},
+  {key:"ruang_operasi", name:"Ruang Operasi (Rumah Sakit). lux: 1000", kategori:"Rumah Sakit.", lux:1000},
+  {key:"icu", name:"ICU (Rumah Sakit). lux: 300", kategori:"Rumah Sakit.", lux:300},
+  {key:"rawat_inap", name:"Ruang Rawat Inap (Rumah Sakit). lux: 200", kategori:"Rumah Sakit.", lux:200},
+  {key:"lab_klinik", name:"Laboratorium Klinik (Rumah Sakit). lux: 750", kategori:"Rumah Sakit.", lux:750},
 
-  {key:"produksi_kasar", name:"Produksi Kasar (Industri). lux: 200", kategori:"Industri. lux:200", lux:200},
-  {key:"perakitan_presisi", name:"Perakitan Presisi (Industri). lux: 1000", kategori:"Industri. lux:1000", lux:1000},
-  {key:"gudang", name:"Gudang (Industri). lux: 150", kategori:"Industri. lux:150", lux:150},
-  {key:"ruang_kontrol", name:"Ruang Kontrol (Industri). lux: 500", kategori:"Industri. lux:500", lux:500},
+  {key:"produksi_kasar", name:"Produksi Kasar (Industri). lux: 200", kategori:"Industri.", lux:200},
+  {key:"perakitan_presisi", name:"Perakitan Presisi (Industri). lux: 1000", kategori:"Industri.", lux:1000},
+  {key:"gudang", name:"Gudang (Industri). lux: 150", kategori:"Industri.", lux:150},
+  {key:"ruang_kontrol", name:"Ruang Kontrol (Industri). lux: 500", kategori:"Industri.", lux:500},
 
-  {key:"supermarket", name:"Supermarket (Pertokoan & Mall). lux: 750", kategori:"Pertokoan & Mall. lux:750", lux:750},
-  {key:"etalase", name:"Etalase / Display (Pertokoan & Mall). lux: 1000", kategori:"Pertokoan & Mall. lux:1000", lux:1000},
-  {key:"area_kasir", name:"Area Kasir (Pertokoan & Mall). lux: 500", kategori:"Pertokoan & Mall. lux:500", lux:500},
-  {key:"foodcourt", name:"Foodcourt (Pertokoan & Mall). lux: 300", kategori:"Pertokoan & Mall. lux:300", lux:300},
+  {key:"supermarket", name:"Supermarket (Pertokoan & Mall). lux: 750", kategori:"Pertokoan & Mall.", lux:750},
+  {key:"etalase", name:"Etalase / Display (Pertokoan & Mall). lux: 1000", kategori:"Pertokoan & Mall.", lux:1000},
+  {key:"area_kasir", name:"Area Kasir (Pertokoan & Mall). lux: 500", kategori:"Pertokoan & Mall.", lux:500},
+  {key:"foodcourt", name:"Foodcourt (Pertokoan & Mall). lux: 300", kategori:"Pertokoan & Mall.", lux:300},
 
-  {key:"jalan_utama", name:"Jalan Utama (Outdoor). lux: 20", kategori:"Jalan & Transportasi. lux:20", lux:20},
-  {key:"jalan_lingkungan", name:"Jalan Lingkungan (Outdoor). lux: 10", kategori:"Jalan & Transportasi. lux:10", lux:10},
-  {key:"terminal", name:"Terminal (Jalan & Transportasi). lux: 150", kategori:"Jalan & Transportasi. lux:150", lux:150},
-  {key:"bandara", name:"Bandara / Ruang Tunggu (Jalan & Transportasi). lux: 300", kategori:"Jalan & Transportasi. lux:300", lux:300}
+  {key:"jalan_utama", name:"Jalan Utama (Outdoor). lux: 20", kategori:"Jalan & Transportasi.", lux:20},
+  {key:"jalan_lingkungan", name:"Jalan Lingkungan (Outdoor). lux: 10", kategori:"Jalan & Transportasi.", lux:10},
+  {key:"terminal", name:"Terminal (Jalan & Transportasi). lux: 150", kategori:"Jalan & Transportasi.", lux:150},
+  {key:"bandara", name:"Bandara / Ruang Tunggu (Jalan & Transportasi). lux: 300", kategori:"Jalan & Transportasi.", lux:300}
 ];
 
 const LAMPS = [
@@ -388,7 +388,7 @@ Lampu   : ${lamp.name}
 Jumlah  : ${lampCount} pcs
 Total Watt : ${totalWatt} W
 Arus       : ${arus.toFixed(2)} A
-(Perhitungan sederhana: total lumen dibagi lumen/lampu; watt = lamp.watt * jumlah)`;
+Hasil penghiitungan ini dilakukan berdasarkan PUIL & SNI`;
 });
 
 document.getElementById('reset1').addEventListener('click', ()=>{
@@ -434,7 +434,7 @@ function addGroup(initialData){
 
       <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <div class="small-muted">Efisiensi default η = <input type="number" class="etaField kecil" value="0.8" step="0.01" style="width:70px;margin-left:6px"></div>
-        <div class="small-muted">Catatan: kolom hasil akan tampil setelah perhitungan (Part 2).</div>
+        <div class="small-muted">Catatan: kolom hasil akan tampil setelah perhitungan .</div>
       </div>
     </div>
   `);
@@ -460,7 +460,7 @@ function addGroup(initialData){
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
           <button class="btn outline kecil btn-remove-row">Hapus Baris</button>
-          <div class="small-muted">Watt otomatis (Part 2)</div>
+          <div class="small-muted">Watt otomatis </div>
         </div>
       </div>
     `);
@@ -580,7 +580,7 @@ function pickMCB(requiredA) {
   const need = requiredA * safetyFactor;
 
   // Daftar ukuran MCB umum dari berbagai pabrikan (Schneider, ABB, Legrand, Chint, dll)
-  const MCB_SIZES = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160];
+  const MCB_SIZES = [2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160];
 
   // Cari ukuran pertama yang lebih besar atau sama
   for (const size of MCB_SIZES) {
@@ -761,3 +761,4 @@ if(document.querySelectorAll('.group-card').length === 0){
 
 </script>
 <!-- ===== END PART 2 ===== -->
+
